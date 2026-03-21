@@ -1,0 +1,34 @@
+
+> my-project@0.1.0 build
+> next build
+
+▲ Next.js 16.2.0 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 4.1s
+  Skipping validation of types
+  Finished TypeScript config validation in 15ms ...
+  Collecting page data using 11 workers ...
+  Generating static pages using 11 workers (0/11) ...
+  Generating static pages using 11 workers (2/11) 
+  Generating static pages using 11 workers (5/11) 
+  Generating static pages using 11 workers (8/11) 
+✓ Generating static pages using 11 workers (11/11) in 429ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/verify
+├ ○ /dashboard
+├ ○ /dashboard/history
+├ ○ /dashboard/settings
+├ ○ /dashboard/sources
+├ ○ /dashboard/upgrade
+├ ○ /forgot-password
+└ ○ /login
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

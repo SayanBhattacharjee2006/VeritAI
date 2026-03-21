@@ -1,37 +1,27 @@
 'use client'
 
 import { Navbar } from '@/components/veritai/landing/Navbar'
-import { SpotlightCursor } from '@/components/veritai/landing/SpotlightCursor'
-import { GlitterBackground } from '@/components/veritai/landing/GlitterBackground'
 import { HeroSection } from '@/components/veritai/landing/HeroSection'
-import { StatsSection } from '@/components/veritai/landing/StatsSection'
-import { MarqueeSection } from '@/components/veritai/landing/MarqueeSection'
-import { FeaturesSection } from '@/components/veritai/landing/FeaturesSection'
 import { HowItWorksSection } from '@/components/veritai/landing/HowItWorksSection'
-import { ProcessingDemoSection } from '@/components/veritai/landing/ProcessingDemoSection'
+import { FeaturesSection } from '@/components/veritai/landing/FeaturesSection'
 import { PricingSection } from '@/components/veritai/landing/PricingSection'
-import { FAQSection } from '@/components/veritai/landing/FAQSection'
+import { AIDetectionSection } from '@/components/veritai/landing/AIDetectionSection'
+import { CTASection } from '@/components/veritai/landing/CTASection'
 import { Footer } from '@/components/veritai/landing/Footer'
-import { ToastContainer } from '@/components/veritai/Toast'
 
 export default function LandingPage() {
   return (
-    <>
-      <SpotlightCursor />
-      <GlitterBackground />
+    <div className="bg-[#0D0D0D] min-h-screen text-white font-sans selection:bg-[#FF6B2B]/30 selection:text-white">
       <Navbar />
       <main>
         <HeroSection />
-        <StatsSection />
-        <MarqueeSection />
-        <FeaturesSection />
         <HowItWorksSection />
-        <ProcessingDemoSection />
+        <FeaturesSection />
         <PricingSection />
-        <FAQSection />
+        <AIDetectionSection />
+        <CTASection />
       </main>
       <Footer />
-      <ToastContainer />
-    </>
+    </div>
   )
 }

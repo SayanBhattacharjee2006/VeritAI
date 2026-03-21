@@ -2,244 +2,133 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
-import { Sparkles, Play, ChevronRight } from 'lucide-react'
-import { TruthRing } from '../TruthRing'
-import { VerdictBadge } from '../VerdictBadge'
+import { Sparkles, ArrowRight, Search } from 'lucide-react'
 import { MagneticButton } from '../MagneticButton'
 
-function useAnimatedCounter(target: number, duration: number = 2000) {
-  const [count, setCount] = useState(0)
-  const [hasStarted, setHasStarted] = useState(false)
-
-  useEffect(() => {
-    if (!hasStarted) return
-
-    let startTime: number
-    let animationFrame: number
-
-    const animate = (timestamp: number) => {
-      if (!startTime) startTime = timestamp
-      const progress = Math.min((timestamp - startTime) / duration, 1)
-
-      setCount(Math.floor(progress * target))
-
-      if (progress < 1) {
-        animationFrame = requestAnimationFrame(animate)
-      }
-    }
-
-    animationFrame = requestAnimationFrame(animate)
-
-    return () => cancelAnimationFrame(animationFrame)
-  }, [hasStarted, target, duration])
-
-  return { count, start: () => setHasStarted(true) }
-}
-
-function HeroCard() {
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    const cx = rect.left + rect.width / 2
-    const cy = rect.top + rect.height / 2
-    const dx = ((e.clientX - cx) / rect.width) * 12
-    const dy = ((e.clientY - cy) / rect.height) * 8
-    e.currentTarget.style.transform = `perspective(800px) rotateY(${dx}deg) rotateX(${-dy}deg)`
-  }
-
-  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
-    e.currentTarget.style.transform = 'perspective(800px) rotateY(0deg) rotateX(0deg)'
-    e.currentTarget.style.transition = 'transform 0.4s ease'
-  }
-
-  const claims = [
-    { text: 'Global temperatures rose by 1.5C...', verdict: 'true' as const },
-    { text: 'Amazon produces 20% of oxygen...', verdict: 'false' as const },
-    { text: 'Renewable energy accounts for 30%...', verdict: 'partial' as const },
-  ]
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 60 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-      className="relative"
-    >
-      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-orange/20 via-transparent to-cyan/20 blur-xl" />
-
-      <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}>
-        <div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{ transition: 'transform 0.1s ease' }}
-          className="relative glass rounded-2xl border border-border-v p-6 w-full max-w-sm"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <span className="font-mono text-xs text-cyan">ANALYSIS_ID: VX-9920</span>
-            <span className="text-xs text-muted-v">Just now</span>
-          </div>
-
-          <div className="flex justify-center mb-6">
-            <TruthRing score={94} size={120} strokeWidth={10} />
-          </div>
-
-          <div className="space-y-3">
-            {claims.map((claim, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + index * 0.1 }}
-                className={cn(
-                  'flex items-center gap-3 p-3 rounded-lg bg-surface/50 border-l-2',
-                  claim.verdict === 'true' && 'border-l-green-v',
-                  claim.verdict === 'false' && 'border-l-red-v',
-                  claim.verdict === 'partial' && 'border-l-amber'
-                )}
-              >
-                <VerdictBadge verdict={claim.verdict} size="sm" />
-                <span className="text-sm text-muted-v truncate">{claim.text}</span>
-              </motion.div>
-            ))}
-          </div>
-        </div>
+const Logos = () => (
+  <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 mt-6">
+    {['OpenAI', 'Anthropic', 'Google', 'Meta', 'Reuters'].map((logo, i) => (
+      <motion.div 
+        key={i} 
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 + (i * 0.1), duration: 0.8 }}
+        className="text-[#666666] font-display font-bold text-xl tracking-wider hover:text-[#A0A0A0] transition-colors filter grayscale hover:grayscale-0 duration-500 cursor-default"
+      >
+        {logo}
       </motion.div>
-    </motion.div>
-  )
-}
+    ))}
+  </div>
+);
+
+// Floating 3D Orbs/Rings for background
+const AbstractShapes = () => (
+  <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+    <motion.div 
+      animate={{ 
+        y: [0, -20, 0],
+        rotate: [0, 5, 0],
+        scale: [1, 1.05, 1] 
+      }}
+      transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+      className="absolute top-1/4 -left-10 w-[300px] h-[300px] rounded-[40%] bg-gradient-to-br from-[#FF6B2B]/20 to-[#FF9F1C]/5 blur-[80px]" 
+    />
+    <motion.div 
+      animate={{ 
+        y: [0, 30, 0],
+        x: [0, -20, 0]
+      }}
+      transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+      className="absolute bottom-1/4 -right-20 w-[400px] h-[400px] rounded-full bg-gradient-to-tr from-[#FF9F1C]/10 to-[#FF6B2B]/20 blur-[100px]" 
+    />
+  </div>
+);
 
 export function HeroSection() {
-  const claimsCounter = useAnimatedCounter(10000, 2500)
-  const countriesCounter = useAnimatedCounter(50, 2000)
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      claimsCounter.start()
-      countriesCounter.start()
-    }, 1000)
-    return () => clearTimeout(timer)
-  }, [])
-
   return (
-    <section className="min-h-screen flex items-center relative overflow-hidden pt-16">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden="true"
-      >
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-orange/5 blur-[120px]" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-cyan/4 blur-[100px]" />
-      </div>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-          <div className="text-center lg:text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-orange/30 bg-orange/8 backdrop-blur-sm mb-8"
-            >
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-v opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-v" />
-              </span>
-              <span className="text-sm text-muted-v">Evidence Engine v1.0 - Live</span>
+    <section id="home" className="min-h-screen flex items-center justify-center relative pt-24 pb-16">
+      <AbstractShapes />
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 flex flex-col items-center text-center">
+        
+        {/* Pill Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#1A1A1A]/80 border border-[#2A2A2A] backdrop-blur-md mb-8"
+        >
+          <Sparkles className="w-4 h-4 text-[#FF9F1C]" />
+          <span className="text-sm font-medium text-[#FF9F1C]">AI-Powered Fact Checking</span>
+        </motion.div>
+
+        {/* H1 Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+          className="font-sans text-5xl sm:text-7xl lg:text-[5.5rem] font-bold tracking-tight leading-[1.1] mb-8 max-w-5xl"
+        >
+          <span className="text-white">Stop Trusting.</span>
+          <br />
+          <span className="bg-gradient-to-r from-[#FF6B2B] to-[#FF9F1C] bg-clip-text text-transparent">Start Verifying.</span>
+        </motion.h1>
+
+        {/* Subtext */}
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2, ease: 'easeOut' }}
+          className="text-[#A0A0A0] text-lg sm:text-xl leading-relaxed max-w-2xl mb-12"
+        >
+          Automatically extract claims, search real-world evidence, and get confidence-scored accuracy reports in seconds.
+        </motion.p>
+
+        {/* CTA Buttons */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3, ease: 'easeOut' }}
+          className="flex flex-col sm:flex-row items-center gap-5 mb-20"
+        >
+          <MagneticButton>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/login"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-[#FF6B2B] to-[#FF9F1C] text-white text-lg font-semibold shadow-[0_0_30px_rgba(255,107,43,0.3)] hover:shadow-[0_0_40px_rgba(255,107,43,0.5)] transition-shadow w-full sm:w-auto"
+              >
+                Analyze Text
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </motion.div>
+          </MagneticButton>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
-            >
-              <span className="text-text">Stop Believing.</span>
-              <br />
-              <span className="bg-gradient-to-r from-orange via-amber to-orange/70 bg-clip-text text-transparent">Start Verifying.</span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-muted-v/90 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8"
-            >
-              VeritAI extracts every claim from articles, URLs, and images - then verifies each against real-time web evidence.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center gap-4 justify-center lg:justify-start mb-8"
-            >
-              <MagneticButton>
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center gap-2 px-8 py-4 rounded-xl btn-primary text-base font-semibold"
-                  >
-                    <Sparkles className="w-5 h-5" />
-                    Try for Free
-                    <ChevronRight className="w-5 h-5" />
-                  </Link>
-                </motion.div>
-              </MagneticButton>
-
-              <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Link
-                  href="#how-it-works"
-                  className="inline-flex items-center gap-2 px-8 py-4 rounded-xl btn-ghost text-base font-semibold"
-                >
-                  <Play className="w-5 h-5" />
-                  See How It Works
-                </Link>
-              </motion.div>
+          <MagneticButton>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="#how-it-works"
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-transparent border border-[#2A2A2A] text-white text-lg font-semibold hover:bg-[#1A1A1A] hover:border-[#FF6B2B]/50 transition-all w-full sm:w-auto shadow-sm"
+              >
+                <Search className="w-5 h-5 text-[#A0A0A0]" />
+                Try a URL
+              </Link>
             </motion.div>
+          </MagneticButton>
+        </motion.div>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.5 }}
-              className="text-sm text-muted-v"
-            >
-              Used to verify <span className="gradient-text font-semibold">{claimsCounter.count.toLocaleString()}+</span>{' '}
-              claims across <span className="gradient-text font-semibold">{countriesCounter.count}+</span> countries
-            </motion.p>
+        {/* Trust Bar */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.8 }}
+          className="pt-10 border-t border-[#2A2A2A]/50 w-full max-w-4xl"
+        >
+          <p className="text-sm font-medium text-[#666666] mb-4 uppercase tracking-widest text-center">
+            Trusted by teams at
+          </p>
+          <Logos />
+        </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.8 }}
-              className="flex items-center gap-3 mt-6"
-            >
-              <div className="flex -space-x-2">
-                {['A', 'M', 'R', 'S'].map((initial, i) => {
-                  const colors = [
-                    'from-orange to-amber',
-                    'from-cyan to-primary-v',
-                    'from-green-v to-cyan',
-                    'from-primary-v to-orange',
-                  ]
-                  return (
-                    <div
-                      key={i}
-                      className={`w-8 h-8 rounded-full border-2 border-bg bg-gradient-to-br ${colors[i]} flex items-center justify-center shrink-0`}
-                    >
-                      <span className="text-xs font-bold text-bg">{initial}</span>
-                    </div>
-                  )
-                })}
-              </div>
-              <span className="text-sm text-muted-v">
-                Trusted by <span className="text-text font-semibold">2,000+</span> researchers
-              </span>
-            </motion.div>
-          </div>
-
-          <div className="flex justify-center lg:justify-end">
-            <HeroCard />
-          </div>
-        </div>
       </div>
     </section>
   )
