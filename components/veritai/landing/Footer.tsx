@@ -1,139 +1,39 @@
 'use client'
 
-import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { ShieldCheck, Github, Sun, Moon } from 'lucide-react'
-import { useUIStore } from '@/lib/stores/ui-store'
-import { ScrollReveal } from '@/components/veritai/ScrollReveal'
-
-const footerLinks = {
-  product: [
-    { label: 'Features', href: '#features' },
-    { label: 'Pricing', href: '#pricing' },
-    { label: 'API', href: '#' },
-    { label: 'Changelog', href: '#' },
-  ],
-  company: [
-    { label: 'About', href: '#' },
-    { label: 'Blog', href: '#' },
-    { label: 'Careers', href: '#' },
-    { label: 'Contact', href: '#' },
-  ],
-  legal: [
-    { label: 'Privacy', href: '#' },
-    { label: 'Terms', href: '#' },
-    { label: 'Security', href: '#' },
-  ],
-}
+import { ShieldCheck } from 'lucide-react'
 
 export function Footer() {
-  const { theme, toggleTheme } = useUIStore()
-  
   return (
-    <footer className="relative">
-      {/* Glow line */}
-      <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-cyan to-transparent" />
-      
-      <ScrollReveal direction="none" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-5 gap-12 mb-12">
-          {/* Brand column */}
-          <div className="md:col-span-2">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="p-1.5 rounded-lg bg-gradient-to-br from-orange to-amber">
-                <ShieldCheck className="w-5 h-5 text-bg" />
+    <footer className="bg-[#0D0D0D] border-t border-[#1A1A1A] py-12 pt-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          
+          <div className="flex items-center gap-3">
+             <div className="flex items-center gap-2 group cursor-default">
+              <div className="p-1 rounded bg-[#1A1A1A] border border-[#2A2A2A]">
+                <ShieldCheck className="w-5 h-5 text-[#FF9F1C]" />
               </div>
-              <span className="font-display font-bold text-xl text-text">VeritAI</span>
-            </Link>
-            <p className="text-muted-v text-sm leading-relaxed max-w-xs">
-              Evidence-backed truth, powered by AI. Stop believing. Start verifying.
-            </p>
+              <span className="font-sans font-bold text-lg text-white tracking-tight">VeritAI</span>
+            </div>
           </div>
-          
-          {/* Product links */}
-          <div>
-            <h4 className="font-semibold text-text mb-4">Product</h4>
-            <ul className="space-y-3">
-              {footerLinks.product.map((link) => (
-                <li key={link.label}>
-                  <Link 
-                    href={link.href}
-                    className="text-sm text-muted-v hover:text-text transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm font-medium text-[#A0A0A0]">
+            <Link href="#features" className="hover:text-white transition-colors">Product</Link>
+            <Link href="#" className="hover:text-white transition-colors">Company</Link>
+            <Link href="#" className="hover:text-white transition-colors">Legal</Link>
           </div>
-          
-          {/* Company links */}
-          <div>
-            <h4 className="font-semibold text-text mb-4">Company</h4>
-            <ul className="space-y-3">
-              {footerLinks.company.map((link) => (
-                <li key={link.label}>
-                  <Link 
-                    href={link.href}
-                    className="text-sm text-muted-v hover:text-text transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          
-          {/* Legal links */}
-          <div>
-            <h4 className="font-semibold text-text mb-4">Legal</h4>
-            <ul className="space-y-3">
-              {footerLinks.legal.map((link) => (
-                <li key={link.label}>
-                  <Link 
-                    href={link.href}
-                    className="text-sm text-muted-v hover:text-text transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+
+        </div>
+
+        <div className="mt-12 pt-8 border-t border-[#1A1A1A] flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#666666]">
+          <p>© 2025 VerifyAI. Built for truth.</p>
+          <div className="flex gap-4">
+             <Link href="#" className="hover:text-[#A0A0A0] transition-colors">Privacy Policy</Link>
+             <Link href="#" className="hover:text-[#A0A0A0] transition-colors">Terms of Service</Link>
           </div>
         </div>
-        
-        {/* Bottom bar */}
-        <div className="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-border-v gap-4">
-          <p className="text-sm text-muted-v">
-            &copy; {new Date().getFullYear()} VeritAI. All rights reserved.
-          </p>
-          
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-v">Built for truth</span>
-            
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-surface transition-colors"
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-muted-v" />
-              ) : (
-                <Moon className="w-5 h-5 text-muted-v" />
-              )}
-            </button>
-            
-            <motion.a
-              href="https://github.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ scale: 1.1 }}
-              className="p-2 rounded-lg hover:bg-surface transition-colors"
-            >
-              <Github className="w-5 h-5 text-muted-v" />
-            </motion.a>
-          </div>
-        </div>
-      </ScrollReveal>
+      </div>
     </footer>
   )
 }

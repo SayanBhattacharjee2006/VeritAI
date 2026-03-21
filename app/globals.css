@@ -4,48 +4,48 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* VeritAI Design System */
-  --bg: #0A0F1E;
-  --surface: #111827;
-  --card: #1A1F2F;
-  --card-high: #25293A;
-  --border: #2A2F42;
-  --primary: #ADC6FF;
-  --primary-glow: #4D8EFF;
+  /* VeritAI Design System (Afterglow aesthetic) */
+  --bg: #0D0D0D;
+  --surface: #141414;
+  --card: #1A1A1A;
+  --card-high: #222222;
+  --border: #2A2A2A;
+  --primary: #FF9F1C;
+  --primary-glow: #FF6B2B;
   --cyan: #4CD7F6;
   --orange: #FF6B2B;
-  --amber: #F59E0B;
+  --amber: #FF9F1C;
   --green: #4AE176;
   --red: #FF6B6B;
-  --text: #DEE1F7;
-  --muted: #8892A4;
+  --text: #FFFFFF;
+  --muted: #A0A0A0;
   
   /* Mapped to Tailwind conventions */
-  --background: #0A0F1E;
-  --foreground: #DEE1F7;
-  --card-foreground: #DEE1F7;
-  --popover: #1A1F2F;
-  --popover-foreground: #DEE1F7;
-  --primary-foreground: #0A0F1E;
-  --secondary: #25293A;
-  --secondary-foreground: #DEE1F7;
-  --muted-foreground: #8892A4;
-  --accent: #25293A;
-  --accent-foreground: #DEE1F7;
+  --background: #0D0D0D;
+  --foreground: #FFFFFF;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
+  --primary-foreground: #0D0D0D;
+  --secondary: #222222;
+  --secondary-foreground: #FFFFFF;
+  --muted-foreground: #A0A0A0;
+  --accent: #222222;
+  --accent-foreground: #FFFFFF;
   --destructive: #FF6B6B;
-  --destructive-foreground: #0A0F1E;
-  --input: #2A2F42;
-  --ring: #4D8EFF;
-  --radius: 0.625rem;
+  --destructive-foreground: #0D0D0D;
+  --input: #2A2A2A;
+  --ring: #FF6B2B;
+  --radius: 0.75rem;
   
-  --sidebar: #111827;
-  --sidebar-foreground: #DEE1F7;
-  --sidebar-primary: #ADC6FF;
-  --sidebar-primary-foreground: #0A0F1E;
-  --sidebar-accent: #25293A;
-  --sidebar-accent-foreground: #DEE1F7;
-  --sidebar-border: #2A2F42;
-  --sidebar-ring: #4D8EFF;
+  --sidebar: #141414;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #FF9F1C;
+  --sidebar-primary-foreground: #0D0D0D;
+  --sidebar-accent: #222222;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2A2A2A;
+  --sidebar-ring: #FF6B2B;
 }
 
 /* Light mode overrides */

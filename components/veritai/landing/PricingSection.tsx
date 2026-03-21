@@ -3,141 +3,133 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { Check, X } from 'lucide-react'
-import { ScrollReveal } from '@/components/veritai/ScrollReveal'
-import { MagneticButton } from '../MagneticButton'
+import { Check } from 'lucide-react'
 
 const plans = [
   {
-    name: 'Free',
+    name: 'Free Tier',
     price: '$0',
-    period: 'forever',
-    description: 'Perfect for trying out VeritAI',
+    description: 'Perfect for trying it out',
     features: [
-      { label: '5 verifications/day', included: true },
-      { label: 'Text input only', included: true },
-      { label: 'Basic report', included: true },
-      { label: 'PDF export', included: false },
-      { label: 'API access', included: false },
-      { label: 'Priority processing', included: false },
+      '10 verifications/day',
+      'Basic report',
+      'No citation export',
     ],
-    cta: 'Get Started',
-    featured: false,
+    cta: 'Get Started Free',
+    outlined: true,
+    highlighted: false,
   },
   {
     name: 'Pro',
     price: '$19',
-    period: '/month',
+    period: '/mo',
     description: 'For professionals and researchers',
     badge: 'Most Popular',
     features: [
-      { label: '50 verifications/day', included: true },
-      { label: 'Text, URL & Image input', included: true },
-      { label: 'Full detailed reports', included: true },
-      { label: 'PDF export', included: true },
-      { label: 'API access', included: false },
-      { label: 'Priority processing', included: true },
+      'Unlimited verifications',
+      'Full citations',
+      'Confidence scores',
+      'URL analysis',
+      'PDF export',
     ],
-    cta: 'Start Free Trial',
-    featured: true,
+    cta: 'Upgrade to Pro',
+    outlined: false,
+    highlighted: true,
   },
   {
-    name: 'Premium',
-    price: '$49',
-    period: '/month',
+    name: 'Enterprise',
+    price: 'Custom',
     description: 'For teams and enterprises',
     features: [
-      { label: '500 verifications/day', included: true },
-      { label: 'All input types', included: true },
-      { label: 'Full detailed reports', included: true },
-      { label: 'PDF export', included: true },
-      { label: 'Full API access', included: true },
-      { label: 'Priority processing', included: true },
+      'API access',
+      'Team dashboard',
+      'SLA',
+      'Custom integrations',
     ],
-    cta: 'Contact Sales',
-    featured: false,
+    cta: 'Contact Us',
+    outlined: true,
+    highlighted: false,
   },
 ]
 
-function PricingCard({ plan }: { plan: (typeof plans)[number] }) {
-  return (
-    <motion.div
-      whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300 } }}
-      className={cn(
-        'relative rounded-2xl border p-8',
-        plan.featured
-          ? 'bg-card-v border-orange/30 scale-105 shadow-xl shadow-orange/10 shadow-[0_0_60px_rgba(255,107,43,0.12)]'
-          : 'bg-card-v border-border-v'
-      )}
-    >
-      {plan.badge && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="px-4 py-1 rounded-full bg-gradient-to-r from-orange to-amber text-xs font-semibold text-bg">
-            {plan.badge}
-          </span>
-        </div>
-      )}
-
-      <div className="mb-6">
-        <span className="font-mono text-xs text-muted-v uppercase tracking-wider">{plan.name}</span>
-        <div className="flex items-baseline gap-1 mt-2">
-          <span className="font-display text-5xl font-black text-text">{plan.price}</span>
-          <span className="text-muted-v">{plan.period}</span>
-        </div>
-        <p className="text-sm text-muted-v mt-2">{plan.description}</p>
-      </div>
-
-      <ul className="space-y-3 mb-8">
-        {plan.features.map((feature, index) => (
-          <li key={index} className="flex items-center gap-3">
-            {feature.included ? (
-              <Check className="w-5 h-5 text-green-v shrink-0" />
-            ) : (
-              <X className="w-5 h-5 text-red-v/50 shrink-0" />
-            )}
-            <span className={cn('text-sm', feature.included ? 'text-text' : 'text-muted-v/50')}>{feature.label}</span>
-          </li>
-        ))}
-      </ul>
-
-      <MagneticButton>
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-          <Link
-            href="/login"
-            className={cn(
-              'block w-full py-3 rounded-xl text-center font-semibold transition-colors',
-              plan.featured ? 'btn-primary' : 'btn-ghost'
-            )}
-          >
-            {plan.cta}
-          </Link>
-        </motion.div>
-      </MagneticButton>
-    </motion.div>
-  )
-}
-
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 bg-surface relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange/4 rounded-full blur-[150px] pointer-events-none" aria-hidden="true" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <ScrollReveal className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-green-v/10 text-green-v text-xs font-mono uppercase tracking-wider mb-4">
-            Pricing
-          </span>
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-text mb-4">Start free. Scale when ready.</h2>
-          <p className="text-lg text-muted-v max-w-2xl mx-auto">
-            Choose the plan that fits your verification needs. Upgrade or downgrade anytime.
+    <section id="pricing" className="py-24 relative overflow-hidden bg-[#0D0D0D]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="text-center mb-16">
+          <h2 className="font-sans text-4xl lg:text-5xl font-bold text-white mb-6">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-lg text-[#A0A0A0] max-w-2xl mx-auto">
+            Start free. Scale when you're ready.
           </p>
-        </ScrollReveal>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan, index) =>
-            <ScrollReveal key={plan.name} delay={index * 0.12} scale={true}>
-              <PricingCard plan={plan} />
-            </ScrollReveal>
-          )}
+        <div className="grid md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto">
+          {plans.map((plan, index) => (
+            <motion.div
+              key={plan.name}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              transition={{ duration: 0.6, delay: index * 0.15 }}
+              whileHover={{ y: -8, transition: { type: 'spring', stiffness: 400 } }}
+              className={cn(
+                'relative flex flex-col rounded-[2rem] p-8 lg:p-10 backdrop-blur-md transition-all duration-300',
+                plan.highlighted
+                  ? 'bg-[#1A1A1A] shadow-[0_0_50px_rgba(255,107,43,0.15)] border border-[#FF6B2B]/50'
+                  : 'bg-[#141414] border border-[#2A2A2A] hover:border-[#3A3A3A]'
+              )}
+            >
+              {plan.highlighted && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <span className="px-5 py-1.5 rounded-full bg-gradient-to-r from-[#FF6B2B] to-[#FF9F1C] text-xs font-bold text-white shadow-[0_0_20px_rgba(255,107,43,0.4)] whitespace-nowrap tracking-wide">
+                    {plan.badge}
+                  </span>
+                </div>
+              )}
+
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-white mb-2">{plan.name}</h3>
+                <p className="text-sm text-[#A0A0A0] mb-6 min-h-[40px]">{plan.description}</p>
+                <div className="flex items-baseline gap-1">
+                  {plan.price === 'Custom' ? (
+                    <span className="text-4xl font-bold text-white tracking-tight">{plan.price}</span>
+                  ) : (
+                    <>
+                      <span className="text-5xl font-bold text-white tracking-tight">{plan.price}</span>
+                      {plan.period && <span className="text-lg text-[#A0A0A0] font-medium">{plan.period}</span>}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <ul className="space-y-4 mb-10 flex-1">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-3">
+                    <div className="mt-1 flex-shrink-0 w-5 h-5 rounded-full bg-[#2A2A2A] flex items-center justify-center">
+                      <Check className="w-3 h-3 text-[#FF9F1C]" />
+                    </div>
+                    <span className="text-[#E0E0E0]">{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto">
+                <Link
+                  href="/login"
+                  className={cn(
+                    'flex items-center justify-center w-full py-4 rounded-xl text-sm font-bold transition-all',
+                    plan.outlined
+                      ? 'bg-transparent border border-[#3A3A3A] text-white hover:bg-[#2A2A2A] hover:border-[#4A4A4A]'
+                      : 'bg-gradient-to-r from-[#FF6B2B] to-[#FF9F1C] text-white shadow-[0_0_20px_rgba(255,107,43,0.3)] hover:shadow-[0_0_30px_rgba(255,107,43,0.5)] border-none'
+                  )}
+                >
+                  {plan.cta}
+                </Link>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
