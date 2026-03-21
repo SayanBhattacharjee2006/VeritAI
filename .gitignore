@@ -9,7 +9,7 @@ next.user-config.*
 
 # Environment variables
 .env
-.env*.local
+# .env*.local
 backend/.env
 
 # Common ignores

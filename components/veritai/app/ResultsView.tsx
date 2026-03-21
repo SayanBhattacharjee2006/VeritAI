@@ -3,11 +3,11 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { 
-  FileText, 
-  Link as LinkIcon, 
-  Image, 
-  Share2, 
+import {
+  FileText,
+  Link as LinkIcon,
+  Image,
+  Share2,
   Download,
   AlertTriangle,
   Lightbulb,
@@ -24,27 +24,27 @@ export function ResultsView() {
   const { report, reset } = useVerificationStore()
   const { addToast } = useUIStore()
   const [filter, setFilter] = useState<FilterType>('priority')
-  
+
   if (!report) return null
-  
+
   const inputIcon = {
     text: FileText,
     url: LinkIcon,
     image: Image,
   }
-  
+
   const Icon = inputIcon[report.inputType]
-  
+
   // Sort claims: FALSE first, then PARTIAL, then TRUE, then UNVERIFIABLE
   const sortedClaims = [...report.claims].sort((a, b) => {
     const order: Record<Verdict, number> = { false: 0, partial: 1, true: 2, unverifiable: 3 }
     return order[a.verdict] - order[b.verdict]
   })
-  
+
   const filteredClaims = filter === 'all' || filter === 'priority'
     ? sortedClaims
     : sortedClaims.filter(claim => claim.verdict === filter)
-  
+
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href)
     addToast({
@@ -53,7 +53,7 @@ export function ResultsView() {
       type: 'success',
     })
   }
-  
+
   const handleExport = async () => {
     addToast({
       title: 'Generating PDF...',
@@ -75,48 +75,125 @@ export function ResultsView() {
         return
       }
 
-      const canvas = await html2canvas(reportEl, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#0A0F1E',
-        logging: false,
-      })
+      // Clone the element to avoid hydration mismatch issues
+      // caused by browser extensions modifying the DOM
+      const clone = reportEl.cloneNode(true) as HTMLElement
+      clone.style.position = 'fixed'
+      clone.style.top = '0'
+      clone.style.left = '0'
+      clone.style.width = reportEl.scrollWidth + 'px'
+      clone.style.zIndex = '-9999'
+      clone.style.pointerEvents = 'none'
+      document.body.appendChild(clone)
 
-      const imgData = canvas.toDataURL('image/png')
+      let canvas: HTMLCanvasElement
+      try {
+        canvas = await html2canvas(clone, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#0A0F1E',
+          logging: false,
+          width: reportEl.scrollWidth,
+          height: reportEl.scrollHeight,
+        })
+      } finally {
+        document.body.removeChild(clone)
+      }
+
+      // Use mm units - standard and reliable across all jsPDF versions
       const pdf = new jsPDF({
         orientation: 'portrait',
-        unit: 'px',
+        unit: 'mm',
         format: 'a4',
       })
 
-      const pdfWidth = pdf.internal.pageSize.getWidth()
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width
+      const PAGE_W = 210
+      const PAGE_H = 297
+      const MARGIN = 10
+      const HEADER_H = 18
+      const FOOTER_H = 8
+      const CONTENT_W = PAGE_W - MARGIN * 2
+      const CONTENT_H = PAGE_H - MARGIN * 2 - HEADER_H - FOOTER_H
 
-      // Add header
-      pdf.setFillColor(10, 15, 30)
-      pdf.rect(0, 0, pdfWidth, 40, 'F')
-      pdf.setTextColor(255, 107, 43)
-      pdf.setFontSize(18)
-      pdf.text('VeritAI — Fact Check Report', 20, 26)
-      pdf.setFontSize(10)
-      pdf.setTextColor(136, 146, 164)
-      pdf.text(
-        `Generated: ${new Date().toLocaleString()}  |  ID: ${report!.id}`,
-        20,
-        38
-      )
+      // Convert canvas pixels to mm at 96dpi
+      // canvas is at scale:2 so effective dpi = 192
+      const PX_TO_MM = 25.4 / 192
+      const imgHeightMm = canvas.height * PX_TO_MM
+      const imgWidthMm = canvas.width * PX_TO_MM
 
-      // Add report content
-      pdf.addImage(imgData, 'PNG', 0, 50, pdfWidth, pdfHeight)
+      // Scale image to fit content width
+      const scale = CONTENT_W / imgWidthMm
+      const scaledH = imgHeightMm * scale
+      const scaledW = CONTENT_W
 
-      // Add footer
-      pdf.setFontSize(9)
-      pdf.setTextColor(136, 146, 164)
-      pdf.text(
-        'veritai.io — Evidence-backed truth, powered by AI',
-        20,
-        pdf.internal.pageSize.getHeight() - 10
-      )
+      // Split into pages
+      const totalPages = Math.ceil(scaledH / CONTENT_H)
+
+      for (let page = 0; page < totalPages; page++) {
+        if (page > 0) pdf.addPage()
+
+        // Header
+        pdf.setFillColor(10, 15, 30)
+        pdf.rect(0, 0, PAGE_W, MARGIN + HEADER_H, 'F')
+        pdf.setFont('helvetica', 'bold')
+        pdf.setFontSize(13)
+        pdf.setTextColor(255, 107, 43)
+        pdf.text('VeritAI - Fact Check Report', MARGIN, MARGIN + 8)
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(7)
+        pdf.setTextColor(136, 146, 164)
+        pdf.text(
+          `ID: ${report!.id}  |  ${new Date().toLocaleString()}  |  Page ${page + 1}/${totalPages}`,
+          MARGIN,
+          MARGIN + 14
+        )
+
+        // Clip and draw the relevant slice of the image for this page
+        const srcY = page * CONTENT_H
+        const sliceH = Math.min(CONTENT_H, scaledH - srcY)
+
+        // sourceY in original canvas pixels
+        const canvasSrcY = (srcY / scale) / PX_TO_MM
+        const canvasSliceH = (sliceH / scale) / PX_TO_MM
+
+        // Create a temporary canvas for just this slice
+        const sliceCanvas = document.createElement('canvas')
+        sliceCanvas.width = canvas.width
+        sliceCanvas.height = Math.round(canvasSliceH)
+        const ctx = sliceCanvas.getContext('2d')
+        if (ctx) {
+          ctx.drawImage(
+            canvas,
+            0, Math.round(canvasSrcY),
+            canvas.width, Math.round(canvasSliceH),
+            0, 0,
+            canvas.width, Math.round(canvasSliceH)
+          )
+        }
+        const sliceData = sliceCanvas.toDataURL('image/png')
+
+        pdf.addImage(
+          sliceData,
+          'PNG',
+          MARGIN,
+          MARGIN + HEADER_H,
+          scaledW,
+          sliceH
+        )
+
+        // Footer
+        pdf.setFillColor(10, 15, 30)
+        pdf.rect(0, PAGE_H - MARGIN - FOOTER_H, PAGE_W, MARGIN + FOOTER_H, 'F')
+        pdf.setFont('helvetica', 'normal')
+        pdf.setFontSize(7)
+        pdf.setTextColor(136, 146, 164)
+        pdf.text(
+          'veritai.io - Evidence-backed truth, powered by AI',
+          MARGIN,
+          PAGE_H - MARGIN - 2
+        )
+      }
 
       pdf.save(`veritai-report-${report!.id}.pdf`)
 
@@ -126,6 +203,7 @@ export function ResultsView() {
         type: 'success',
       })
     } catch (e) {
+      console.error('PDF export error:', e)
       addToast({
         title: 'Export failed',
         description: 'Could not generate PDF. Please try again.',
@@ -133,7 +211,7 @@ export function ResultsView() {
       })
     }
   }
-  
+
   return (
     <div id="veritai-report" className="max-w-4xl mx-auto">
       {/* Back button */}
@@ -146,7 +224,7 @@ export function ResultsView() {
         <ArrowLeft className="w-4 h-4" />
         <span className="text-sm">New verification</span>
       </motion.button>
-      
+
       {/* Report header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -156,13 +234,13 @@ export function ResultsView() {
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
           <div>
             <p className="font-mono text-xs text-cyan mb-2">
-              Research Analysis — ID {report.id}
+              Research Analysis &#8212; ID {report.id}
             </p>
             <h1 className="font-display text-2xl sm:text-3xl font-bold text-text">
               {report.title}
             </h1>
           </div>
-          
+
           {/* Action buttons */}
           <div className="flex items-center gap-2 shrink-0">
             <motion.button
@@ -185,7 +263,7 @@ export function ResultsView() {
             </motion.button>
           </div>
         </div>
-        
+
         {/* Meta info */}
         <div className="flex flex-wrap items-center gap-3">
           <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border-v">
@@ -199,7 +277,7 @@ export function ResultsView() {
           </span>
         </div>
       </motion.div>
-      
+
       {/* Summary card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -228,7 +306,7 @@ export function ResultsView() {
               )}
             </div>
           </div>
-          
+
           {/* Right: Warnings and takeaways preview */}
           <div className="flex-1 space-y-4">
             {/* Conflict warning */}
@@ -245,7 +323,7 @@ export function ResultsView() {
                 </div>
               </div>
             )}
-            
+
             {/* Key takeaways preview */}
             <div className="p-4 rounded-xl bg-surface">
               <div className="flex items-center gap-2 mb-2">
@@ -255,8 +333,8 @@ export function ResultsView() {
               <ul className="space-y-1">
                 {report.takeaways.slice(0, 2).map((takeaway, index) => (
                   <li key={index} className="text-sm text-muted-v flex items-start gap-2">
-                    <span className="text-cyan shrink-0">•</span>
-                    <span className="line-clamp-1">{takeaway}</span>
+                    <span className="text-cyan shrink-0">&bull;</span>
+                    <span className="text-sm text-muted-v leading-relaxed">{takeaway}</span>
                   </li>
                 ))}
               </ul>
@@ -264,7 +342,7 @@ export function ResultsView() {
           </div>
         </div>
       </motion.div>
-      
+
       {/* Claims section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -276,7 +354,7 @@ export function ResultsView() {
           <h2 className="text-lg font-semibold text-text">
             Analyzed Claims ({report.claims.length})
           </h2>
-          
+
           <div className="flex flex-wrap gap-2">
             {(['priority', 'all', 'true', 'false', 'partial'] as FilterType[]).map((f) => (
               <button
@@ -294,20 +372,20 @@ export function ResultsView() {
             ))}
           </div>
         </div>
-        
+
         {/* Claims list */}
         <div className="space-y-4">
           {filteredClaims.map((claim, index) => (
-            <ClaimCard 
-              key={claim.id} 
-              claim={claim} 
+            <ClaimCard
+              key={claim.id}
+              claim={claim}
               index={index}
               defaultExpanded={index === 0}
             />
           ))}
         </div>
       </motion.div>
-      
+
       {/* Full takeaways section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -322,12 +400,12 @@ export function ResultsView() {
         <ul className="space-y-3">
           {report.takeaways.map((takeaway, index) => (
             <li key={index} className="flex items-start gap-3">
-              <span className="text-cyan shrink-0 mt-1">•</span>
-              <span className="text-muted-v leading-relaxed">{takeaway}</span>
+              <span className="text-cyan shrink-0 mt-1">&bull;</span>
+              <span className="text-sm text-muted-v leading-relaxed">{takeaway}</span>
             </li>
           ))}
         </ul>
-        
+
         <motion.button
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

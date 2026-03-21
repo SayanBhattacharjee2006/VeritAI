@@ -10,7 +10,6 @@ import { useAuthStore } from '@/lib/stores/auth-store'
 export default function HistoryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const { history } = useVerificationStore()
-  const { isAuthenticated } = useAuthStore()
   const [isLoading, setIsLoading] = useState(true)
   const [backendHistory, setBackendHistory] = useState<typeof history>([])
 
@@ -18,6 +17,7 @@ export default function HistoryPage() {
     const fetchHistory = async () => {
       try {
         const token = localStorage.getItem('veritai-token')
+        const { isAuthenticated } = useAuthStore.getState()
         if (!token || !isAuthenticated) {
           setIsLoading(false)
           return
@@ -59,7 +59,7 @@ export default function HistoryPage() {
     }
 
     fetchHistory()
-  }, [isAuthenticated])
+  }, [])
 
   const mergedHistory = [
     ...backendHistory,
@@ -201,12 +201,13 @@ export default function HistoryPage() {
                     <span
                       className={cn(
                         'px-2.5 py-1 rounded-full text-xs font-semibold',
+                        item.accuracy < 0 && 'bg-muted-v/20 text-muted-v',
                         item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
                         item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
-                        item.accuracy < 50 && 'bg-red-v/20 text-red-v'
+                        item.accuracy >= 0 && item.accuracy < 50 && 'bg-red-v/20 text-red-v'
                       )}
                     >
-                      {item.accuracy}% accuracy
+                      {item.accuracy < 0 ? 'N/A' : `${item.accuracy}% accuracy`}
                     </span>
                   </div>
                 </motion.div>
@@ -236,7 +237,12 @@ export default function HistoryPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-orange">
-                {`${Math.round(mergedHistory.reduce((sum, item) => sum + item.accuracy, 0) / mergedHistory.length)}%`}
+                {(() => {
+                  const validItems = mergedHistory.filter(item => item.accuracy >= 0)
+                  if (validItems.length === 0) return 'N/A'
+                  const avg = validItems.reduce((sum, item) => sum + item.accuracy, 0) / validItems.length
+                  return `${Math.round(avg)}%`
+                })()}
               </p>
               <p className="text-sm text-muted-v">Avg Accuracy</p>
             </div>

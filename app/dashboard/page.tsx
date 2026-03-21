@@ -68,7 +68,10 @@ function IdleView() {
     if (activeTab === 'text') {
       content = textInput
     } else if (activeTab === 'url') {
-      content = urlInput
+      content = urlInput.trim()
+      if (content && !content.startsWith('http://') && !content.startsWith('https://')) {
+        content = 'https://' + content
+      }
     } else if (activeTab === 'image' && imageFile) {
       try {
         content = await fileToBase64(imageFile)
@@ -396,11 +399,12 @@ function IdleView() {
                 </div>
                 <div className={cn(
                   'px-2.5 py-1 rounded-full text-xs font-semibold',
+                  item.accuracy < 0 && 'bg-muted-v/20 text-muted-v',
                   item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
                   item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
-                  item.accuracy < 50 && 'bg-red-v/20 text-red-v'
+                  item.accuracy >= 0 && item.accuracy < 50 && 'bg-red-v/20 text-red-v'
                 )}>
-                  {item.accuracy}%
+                  {item.accuracy < 0 ? 'N/A' : `${item.accuracy}%`}
                 </div>
               </motion.div>
             ))}

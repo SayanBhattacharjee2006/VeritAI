@@ -47,7 +47,7 @@ export function ClaimCard({ claim, index, defaultExpanded = false, className }: 
           {/* Top row: verdict badge, claim number, temporal/conflict badges */}
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <VerdictBadge verdict={claim.verdict} size="sm" />
-            <span className="text-xs text-muted-v font-mono">Claim #{claim.id}</span>
+            <span className="text-xs text-muted-v font-mono">Claim #{index + 1}</span>
             {claim.isTemporal && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan/20 text-cyan text-[10px] font-medium">
                 <Clock className="w-3 h-3" />

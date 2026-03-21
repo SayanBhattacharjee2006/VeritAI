@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X, Zap } from 'lucide-react'
 import { useAuthStore } from '@/lib/stores/auth-store'
@@ -73,7 +73,35 @@ const planColors = {
 export default function UpgradePage() {
   const { plan: currentPlan, setPlan } = useAuthStore()
   const { addToast } = useUIStore()
+  const [planSynced, setPlanSynced] = useState(false)
   const [isUpgrading, setIsUpgrading] = useState<string | null>(null)
+
+  useEffect(() => {
+    const syncCurrentPlan = async () => {
+      try {
+        const token = localStorage.getItem('veritai-token')
+        if (!token) {
+          setPlanSynced(true)
+          return
+        }
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user/plan`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        if (res.ok) {
+          const data = await res.json()
+          if (data.plan) setPlan(data.plan)
+        }
+      } catch {
+        // use persisted value
+      } finally {
+        setPlanSynced(true)
+      }
+    }
+
+    syncCurrentPlan()
+  }, [setPlan])
 
   const handleUpgrade = async (planId: 'free' | 'pro' | 'premium') => {
     if (planId === currentPlan) return
@@ -172,14 +200,16 @@ export default function UpgradePage() {
 
                 <button
                   onClick={() => handleUpgrade(plan.id)}
-                  disabled={currentPlan === plan.id || isUpgrading === plan.id}
+                  disabled={!planSynced || currentPlan === plan.id || isUpgrading === plan.id}
                   className={`w-full py-3 rounded-lg font-semibold transition-all mb-8 ${
                     plan.highlighted
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-background/50 text-foreground border border-border hover:bg-background'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {isUpgrading === plan.id
+                  {!planSynced
+                    ? 'Checking plan...'
+                    : isUpgrading === plan.id
                     ? 'Upgrading...'
                     : currentPlan === plan.id
                     ? 'Current Plan'

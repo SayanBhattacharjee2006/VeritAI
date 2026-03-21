@@ -70,7 +70,29 @@ export function ProcessingView() {
         <h3 className="text-sm font-semibold text-muted-v uppercase tracking-wider mb-4">
           Pipeline Log
         </h3>
-        <TerminalLog lines={terminalLines} maxHeight="400px" />
+        {terminalLines.length === 0 ? (
+          <div className="terminal rounded-lg border border-border-v overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-2 bg-surface/50 border-b border-border-v">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-v/80" />
+                <div className="w-3 h-3 rounded-full bg-amber/80" />
+                <div className="w-3 h-3 rounded-full bg-green-v/80" />
+              </div>
+              <span className="text-xs text-muted-v ml-2">VeritAI Pipeline</span>
+            </div>
+            <div className="p-4">
+              <div className="flex items-center gap-2">
+                <span className="text-cyan text-xs">[--:--:--]</span>
+                <span className="text-muted-v text-xs">
+                  Initializing pipeline...
+                </span>
+                <span className="terminal-cursor" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <TerminalLog lines={terminalLines} maxHeight="400px" />
+        )}
       </motion.div>
     </div>
   )

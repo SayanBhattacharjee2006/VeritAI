@@ -31,6 +31,12 @@ def compute_confidence(
 
 
 def detect_conflict(sources: list[Source], snippets: list[str]) -> bool:
-    """Heuristic: conflict if sources span tiers 1 and 3 with many results"""
+    """
+    Only flag conflict when there are enough sources (6+)
+    AND both Tier 1 and Tier 3 sources are present.
+    Avoids false positives on normal mixed-tier search results.
+    """
+    if len(sources) < 6:
+        return False
     tiers = {source.tier for source in sources}
-    return 1 in tiers and 3 in tiers and len(sources) >= 4
+    return 1 in tiers and 3 in tiers

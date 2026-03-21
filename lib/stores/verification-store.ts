@@ -140,6 +140,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
           }
 
           addTerminalLine({ text: `Error: ${message}`, type: 'error' })
+          await new Promise(resolve => setTimeout(resolve, 500))
           setState('idle')
           return
         }
@@ -237,6 +238,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
                   text: `Error: ${event.message}`,
                   type: 'error',
                 })
+                await new Promise(resolve => setTimeout(resolve, 500))
                 setState('idle')
               }
             } catch {
@@ -246,6 +248,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
         }
 
         if (!reportCompleted) {
+          await new Promise(resolve => setTimeout(resolve, 500))
           setState('idle')
         }
       } catch (error) {
@@ -253,6 +256,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
           text: `Error: ${error instanceof Error ? error.message : 'Verification failed.'}`,
           type: 'error',
         })
+        await new Promise(resolve => setTimeout(resolve, 500))
         setState('idle')
       }
     })()
