@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { ShieldCheck, Eye, EyeOff, Loader2, Mail, Lock, User } from 'lucide-react'
 import { useAuthStore } from '@/lib/stores/auth-store'
@@ -20,7 +20,7 @@ interface FormErrors {
 
 export default function AuthPage() {
   const router = useRouter()
-  const { login, setPlan } = useAuthStore()
+  const { login, setPlan, isAuthenticated } = useAuthStore()
   const { addToast } = useUIStore()
   
   const [mode, setMode] = useState<AuthMode>('login')
@@ -35,6 +35,12 @@ export default function AuthPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [errors, setErrors] = useState<FormErrors>({})
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace('/dashboard')
+    }
+  }, [isAuthenticated, router])
   
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {}

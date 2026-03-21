@@ -54,17 +54,88 @@ export function ResultsView() {
     })
   }
   
-  const handleExport = () => {
+  const handleExport = async () => {
     addToast({
-      title: 'Export started',
-      description: 'Your PDF will download shortly.',
+      title: 'Generating PDF...',
+      description: 'Please wait a moment.',
       type: 'info',
     })
-    // PDF export would go here
+
+    try {
+      const { default: jsPDF } = await import('jspdf')
+      const { default: html2canvas } = await import('html2canvas')
+
+      const reportEl = document.getElementById('veritai-report')
+      if (!reportEl) {
+        addToast({
+          title: 'Export failed',
+          description: 'Report element not found.',
+          type: 'error',
+        })
+        return
+      }
+
+      const canvas = await html2canvas(reportEl, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#0A0F1E',
+        logging: false,
+      })
+
+      const imgData = canvas.toDataURL('image/png')
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'px',
+        format: 'a4',
+      })
+
+      const pdfWidth = pdf.internal.pageSize.getWidth()
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width
+
+      // Add header
+      pdf.setFillColor(10, 15, 30)
+      pdf.rect(0, 0, pdfWidth, 40, 'F')
+      pdf.setTextColor(255, 107, 43)
+      pdf.setFontSize(18)
+      pdf.text('VeritAI — Fact Check Report', 20, 26)
+      pdf.setFontSize(10)
+      pdf.setTextColor(136, 146, 164)
+      pdf.text(
+        `Generated: ${new Date().toLocaleString()}  |  ID: ${report!.id}`,
+        20,
+        38
+      )
+
+      // Add report content
+      pdf.addImage(imgData, 'PNG', 0, 50, pdfWidth, pdfHeight)
+
+      // Add footer
+      pdf.setFontSize(9)
+      pdf.setTextColor(136, 146, 164)
+      pdf.text(
+        'veritai.io — Evidence-backed truth, powered by AI',
+        20,
+        pdf.internal.pageSize.getHeight() - 10
+      )
+
+      pdf.save(`veritai-report-${report!.id}.pdf`)
+
+      addToast({
+        title: 'PDF exported!',
+        description: `Saved as veritai-report-${report!.id}.pdf`,
+        type: 'success',
+      })
+    } catch (e) {
+      addToast({
+        title: 'Export failed',
+        description: 'Could not generate PDF. Please try again.',
+        type: 'error',
+      })
+    }
   }
   
   return (
-    <div className="max-w-4xl mx-auto">
+    <div id="veritai-report" className="max-w-4xl mx-auto">
       {/* Back button */}
       <motion.button
         initial={{ opacity: 0, x: -20 }}

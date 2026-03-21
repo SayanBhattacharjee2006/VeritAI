@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { useAuthStore } from '@/lib/stores/auth-store'
 
 export type VerificationState = 'idle' | 'processing' | 'results'
 export type InputType = 'text' | 'url' | 'image'
@@ -223,6 +224,11 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
                   claimCount: report.claims.length,
                   accuracy: report.score,
                 })
+
+                // Increment daily check counter
+                const { incrementChecks } = useAuthStore.getState()
+                incrementChecks()
+
                 reportCompleted = true
               }
 

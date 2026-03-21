@@ -1,92 +1,120 @@
-'use client';
+'use client'
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, X, Zap } from 'lucide-react';
-import { useAuthStore } from '@/lib/stores/auth-store';
+import React, { useState } from 'react'
+import { motion } from 'framer-motion'
+import { Check, X, Zap } from 'lucide-react'
+import { useAuthStore } from '@/lib/stores/auth-store'
+import { useUIStore } from '@/lib/stores/ui-store'
 
 const plans = [
   {
-    name: 'Basic',
-    price: 'Free',
+    id: 'free' as const,
+    name: 'Free',
+    price: '$0',
+    period: '/forever',
     description: 'Perfect for getting started',
-    limits: {
-      queriesPerMonth: 10,
-      sourceAccess: 5,
-      advancedAnalytics: false,
-      prioritySupport: false,
-      apiAccess: false,
-    },
     features: [
-      'Up to 10 claims per month',
-      'Access to 5 source databases',
+      '5 verifications per day',
+      'Text and URL input',
+      'Basic accuracy report',
       'Standard processing speed',
-      'Email support',
     ],
-    color: 'from-blue-500/20 to-cyan-500/20',
+    notIncluded: [
+      'Image input',
+      'PDF export',
+      'History saved to cloud',
+      'API access',
+    ],
     highlighted: false,
   },
   {
+    id: 'pro' as const,
     name: 'Pro',
-    price: '$29',
+    price: '$19',
     period: '/month',
     description: 'For regular fact-checkers',
-    limits: {
-      queriesPerMonth: 500,
-      sourceAccess: 50,
-      advancedAnalytics: true,
-      prioritySupport: true,
-      apiAccess: false,
-    },
     features: [
-      'Up to 500 claims per month',
-      'Access to 50 source databases',
-      'Advanced analytics dashboard',
-      'Priority email support',
-      'Claim history export',
-      'Batch verification',
+      '50 verifications per day',
+      'Text, URL, and Image input',
+      'Full accuracy report',
+      'PDF export',
+      'Cloud history sync',
+      'Priority processing',
     ],
-    color: 'from-purple-500/20 to-pink-500/20',
+    notIncluded: ['API access'],
     highlighted: true,
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For organizations and teams',
-    limits: {
-      queriesPerMonth: Infinity,
-      sourceAccess: Infinity,
-      advancedAnalytics: true,
-      prioritySupport: true,
-      apiAccess: true,
-    },
+    id: 'premium' as const,
+    name: 'Premium',
+    price: '$49',
+    period: '/month',
+    description: 'For power users and teams',
     features: [
-      'Unlimited claims per month',
-      'Access to all source databases',
-      'Advanced analytics & reporting',
-      '24/7 phone & email support',
-      'Team collaboration tools',
-      'Custom integrations & API',
-      'Dedicated account manager',
+      'Unlimited verifications',
+      'All input types',
+      'Full accuracy report',
+      'PDF export',
+      'Cloud history sync',
+      'Priority processing',
+      'API access',
     ],
-    color: 'from-amber-500/20 to-orange-500/20',
+    notIncluded: [],
     highlighted: false,
   },
-];
+]
+
+const planColors = {
+  free: 'from-blue-500/20 to-cyan-500/20',
+  pro: 'from-purple-500/20 to-pink-500/20',
+  premium: 'from-amber-500/20 to-orange-500/20',
+} as const
 
 export default function UpgradePage() {
-  const { plan: currentPlan } = useAuthStore();
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const { plan: currentPlan, setPlan } = useAuthStore()
+  const { addToast } = useUIStore()
+  const [isUpgrading, setIsUpgrading] = useState<string | null>(null)
 
-  const handleUpgrade = (planName: string) => {
-    console.log(`Upgrading to ${planName}`);
-    // In a real app, this would redirect to Stripe checkout
-  };
+  const handleUpgrade = async (planId: 'free' | 'pro' | 'premium') => {
+    if (planId === currentPlan) return
+    setIsUpgrading(planId)
+
+    try {
+      const token = localStorage.getItem('veritai-token')
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/user/upgrade`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token ?? ''}`,
+          },
+          body: JSON.stringify({ plan: planId }),
+        }
+      )
+
+      if (!res.ok) throw new Error('Upgrade failed')
+
+      setPlan(planId)
+      addToast({
+        title: `Upgraded to ${planId.charAt(0).toUpperCase() + planId.slice(1)}!`,
+        description: 'Your plan has been updated.',
+        type: 'success',
+      })
+    } catch {
+      addToast({
+        title: 'Upgrade failed',
+        description: 'Please try again.',
+        type: 'error',
+      })
+    } finally {
+      setIsUpgrading(null)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -95,54 +123,15 @@ export default function UpgradePage() {
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-lg text-muted-foreground mb-8">
+          <p className="text-lg text-muted-foreground">
             Choose the perfect plan for your fact-checking needs
           </p>
-
-          {/* Billing Toggle */}
-          <div className="flex justify-center items-center gap-4">
-            <span
-              className={`text-sm font-medium transition-colors ${
-                billingPeriod === 'monthly'
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              }`}
-            >
-              Monthly
-            </span>
-            <button
-              onClick={() =>
-                setBillingPeriod(billingPeriod === 'monthly' ? 'yearly' : 'monthly')
-              }
-              className="relative inline-flex h-8 w-14 items-center rounded-full bg-muted"
-            >
-              <motion.div
-                className="inline-block h-6 w-6 transform rounded-full bg-primary"
-                animate={{
-                  x: billingPeriod === 'yearly' ? 28 : 2,
-                }}
-              />
-            </button>
-            <span
-              className={`text-sm font-medium transition-colors ${
-                billingPeriod === 'yearly'
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              }`}
-            >
-              Yearly
-              <span className="ml-2 text-xs bg-success/20 text-success px-2 py-1 rounded-full">
-                Save 20%
-              </span>
-            </span>
-          </div>
         </motion.div>
 
-        {/* Plans Grid */}
         <div className="grid md:grid-cols-3 gap-8 mb-12">
           {plans.map((plan, index) => (
             <motion.div
-              key={plan.name}
+              key={plan.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
@@ -150,13 +139,11 @@ export default function UpgradePage() {
                 plan.highlighted ? 'md:scale-105 md:shadow-2xl' : ''
               }`}
             >
-              {/* Background */}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${plan.color} opacity-50`}
+                className={`absolute inset-0 bg-gradient-to-br ${planColors[plan.id]} opacity-50`}
               />
               <div className="absolute inset-0 border border-border/50" />
 
-              {/* Content */}
               <div className="relative z-10 p-8">
                 {plan.highlighted && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -174,34 +161,31 @@ export default function UpgradePage() {
                   {plan.description}
                 </p>
 
-                {/* Price */}
                 <div className="mb-8">
                   <span className="text-4xl font-bold text-foreground">
                     {plan.price}
                   </span>
-                  {plan.period && (
-                    <span className="text-muted-foreground ml-1">
-                      {billingPeriod === 'yearly' ? plan.period.replace('/month', '/month (billed yearly)') : plan.period}
-                    </span>
-                  )}
+                  <span className="text-muted-foreground ml-1">
+                    {plan.period}
+                  </span>
                 </div>
 
-                {/* Button */}
                 <button
-                  onClick={() => handleUpgrade(plan.name)}
-                  disabled={currentPlan === plan.name.toLowerCase()}
+                  onClick={() => handleUpgrade(plan.id)}
+                  disabled={currentPlan === plan.id || isUpgrading === plan.id}
                   className={`w-full py-3 rounded-lg font-semibold transition-all mb-8 ${
                     plan.highlighted
                       ? 'bg-primary text-primary-foreground hover:bg-primary/90'
                       : 'bg-background/50 text-foreground border border-border hover:bg-background'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
-                  {currentPlan === plan.name.toLowerCase()
+                  {isUpgrading === plan.id
+                    ? 'Upgrading...'
+                    : currentPlan === plan.id
                     ? 'Current Plan'
-                    : 'Get Started'}
+                    : `Upgrade to ${plan.name}`}
                 </button>
 
-                {/* Features */}
                 <div className="space-y-4">
                   <p className="text-sm font-semibold text-foreground mb-4">
                     What's included:
@@ -217,38 +201,31 @@ export default function UpgradePage() {
                       </span>
                     </div>
                   ))}
-                </div>
 
-                {/* Limits */}
-                <div className="mt-8 pt-8 border-t border-border/50 space-y-3">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase">
-                    Limits
-                  </p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-foreground/70">Queries/month:</span>
-                      <span className="font-semibold">
-                        {plan.limits.queriesPerMonth === Infinity
-                          ? 'Unlimited'
-                          : plan.limits.queriesPerMonth}
-                      </span>
+                  {plan.notIncluded.length > 0 && (
+                    <div className="pt-6 border-t border-border/50 space-y-3">
+                      <p className="text-xs font-semibold text-muted-foreground uppercase">
+                        Not included
+                      </p>
+                      {plan.notIncluded.map((feature, i) => (
+                        <div
+                          key={i}
+                          className="flex items-start gap-3"
+                        >
+                          <X className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-foreground/60">
+                            {feature}
+                          </span>
+                        </div>
+                      ))}
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-foreground/70">Source access:</span>
-                      <span className="font-semibold">
-                        {plan.limits.sourceAccess === Infinity
-                          ? 'All'
-                          : `${plan.limits.sourceAccess}`}
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </motion.div>
           ))}
         </div>
 
-        {/* FAQ */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -263,19 +240,19 @@ export default function UpgradePage() {
             {[
               {
                 q: 'Can I change my plan anytime?',
-                a: 'Yes, you can upgrade or downgrade your plan at any time. Changes will take effect at your next billing cycle.',
+                a: 'Yes, you can switch between Free, Pro, and Premium whenever you need. Your account updates immediately.',
               },
               {
                 q: 'Is there a free trial?',
-                a: 'Yes, all users start with the Basic plan free forever. Upgrade whenever you need more features.',
+                a: 'Yes, every account starts on the Free plan so you can try VeritAI before upgrading.',
               },
               {
-                q: 'What payment methods do you accept?',
-                a: 'We accept all major credit cards via Stripe. For Enterprise plans, contact our sales team for custom payment options.',
+                q: 'Do I need a payment flow right now?',
+                a: 'This environment upgrades plans directly through the backend for testing and internal use.',
               },
               {
-                q: 'Do you offer refunds?',
-                a: 'We offer a 30-day money-back guarantee on paid plans if you\'re not satisfied.',
+                q: 'What does Premium unlock?',
+                a: 'Premium gives you effectively unlimited daily verifications plus every input type and API access.',
               },
             ].map((item, i) => (
               <motion.div
@@ -291,7 +268,6 @@ export default function UpgradePage() {
           </div>
         </motion.div>
 
-        {/* CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -299,7 +275,7 @@ export default function UpgradePage() {
           className="mt-16 text-center"
         >
           <p className="text-muted-foreground mb-4">
-            Still have questions?
+            Need help choosing the right plan?
           </p>
           <button className="text-primary font-semibold hover:underline">
             Contact our sales team →
@@ -307,5 +283,5 @@ export default function UpgradePage() {
         </motion.div>
       </div>
     </div>
-  );
+  )
 }

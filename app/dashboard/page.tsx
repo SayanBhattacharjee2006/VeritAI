@@ -15,6 +15,7 @@ import {
 } from 'lucide-react'
 import { useVerificationStore, type InputType } from '@/lib/stores/verification-store'
 import { useAuthStore } from '@/lib/stores/auth-store'
+import { useUIStore } from '@/lib/stores/ui-store'
 import { ProcessingView } from '@/components/veritai/app/ProcessingView'
 import { ResultsView } from '@/components/veritai/app/ResultsView'
 
@@ -36,7 +37,32 @@ function IdleView() {
   const { startVerification, history } = useVerificationStore()
   const { dailyChecksUsed, maxDailyChecks } = useAuthStore()
   
-  const handleStartVerification = () => {
+  const fileToBase64 = (file: File) =>
+    new Promise<string>((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const result = reader.result
+        if (typeof result !== 'string') {
+          reject(new Error('Failed to read file'))
+          return
+        }
+        resolve(result.split(',')[1] ?? result)
+      }
+      reader.onerror = () => reject(new Error('Failed to read file'))
+      reader.readAsDataURL(file)
+    })
+
+  const handleStartVerification = async () => {
+    // Check daily limit first
+    if (dailyChecksUsed >= maxDailyChecks) {
+      useUIStore.getState().addToast({
+        title: 'Daily limit reached',
+        description: `You've used all ${maxDailyChecks} verifications for today. Upgrade for more.`,
+        type: 'warning',
+      })
+      return
+    }
+
     let content = ''
     
     if (activeTab === 'text') {
@@ -44,7 +70,16 @@ function IdleView() {
     } else if (activeTab === 'url') {
       content = urlInput
     } else if (activeTab === 'image' && imageFile) {
-      content = imageFile.name
+      try {
+        content = await fileToBase64(imageFile)
+      } catch {
+        useUIStore.getState().addToast({
+          title: 'Image upload failed',
+          description: 'Could not process the selected image.',
+          type: 'error',
+        })
+        return
+      }
     }
     
     if (!content) return

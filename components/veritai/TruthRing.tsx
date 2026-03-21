@@ -24,6 +24,7 @@ export function TruthRing({ score, size = 160, strokeWidth = 12, className }: Tr
   }, [score, motionValue])
   
   const getScoreColor = (value: number) => {
+    if (value < 0) return 'var(--muted)'
     if (value >= 80) return 'var(--green)'
     if (value >= 60) return 'var(--cyan)'
     if (value >= 40) return 'var(--amber)'
@@ -53,7 +54,12 @@ export function TruthRing({ score, size = 160, strokeWidth = 12, className }: Tr
           strokeLinecap="round"
           strokeDasharray={circumference}
           initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: circumference - (circumference * score) / 100 }}
+          animate={{
+            strokeDashoffset:
+              score < 0
+                ? circumference
+                : circumference - (circumference * score) / 100,
+          }}
           transition={{ 
             duration: 1.8, 
             ease: [0.34, 1.56, 0.64, 1],
@@ -63,13 +69,19 @@ export function TruthRing({ score, size = 160, strokeWidth = 12, className }: Tr
       </svg>
       {/* Center content */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <motion.span 
-          className="font-display text-4xl font-bold gradient-text"
-        >
-          {displayValue}
-        </motion.span>
+        {score < 0 ? (
+          <span className="font-display text-3xl font-bold text-muted-v">
+            N/A
+          </span>
+        ) : (
+          <motion.span 
+            className="font-display text-4xl font-bold gradient-text"
+          >
+            {displayValue}
+          </motion.span>
+        )}
         <span className="text-xs text-muted-v font-medium uppercase tracking-wider">
-          Accuracy
+          {score < 0 ? 'Unverifiable' : 'Accuracy'}
         </span>
       </div>
     </div>

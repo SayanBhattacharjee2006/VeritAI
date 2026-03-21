@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import {
   ShieldCheck,
@@ -16,6 +16,7 @@ import {
   Bell,
   Sun,
   Moon,
+  LogOut,
 } from 'lucide-react'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { useAuthStore } from '@/lib/stores/auth-store'
@@ -34,9 +35,16 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname()
+  const router = useRouter()
   const { sidebarCollapsed, toggleSidebar, theme, toggleTheme } = useUIStore()
-  const { user, plan } = useAuthStore()
+  const { user, plan, logout } = useAuthStore()
   const { reset } = useVerificationStore()
+
+  const handleLogout = () => {
+    logout()
+    localStorage.removeItem('veritai-token')
+    router.push('/login')
+  }
 
   const isNavItemActive = (href: string) => {
     if (href === '/dashboard') return pathname === '/dashboard'
@@ -162,6 +170,19 @@ export function AppLayout({ children }: AppLayoutProps) {
               </div>
             )}
           </div>
+          <button
+            onClick={handleLogout}
+            className={cn(
+              'flex items-center gap-3 px-3 py-2 rounded-lg w-full',
+              'text-muted-v hover:text-red-v hover:bg-red-v/10 transition-colors',
+              sidebarCollapsed && 'justify-center'
+            )}
+          >
+            <LogOut className="w-4 h-4 shrink-0" />
+            {!sidebarCollapsed && (
+              <span className="text-sm font-medium">Logout</span>
+            )}
+          </button>
         </div>
       </motion.aside>
 

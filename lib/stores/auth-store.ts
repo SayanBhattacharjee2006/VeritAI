@@ -27,7 +27,7 @@ const getPlanLimits = (plan: Plan): number => {
   switch (plan) {
     case 'free': return 5
     case 'pro': return 50
-    case 'premium': return 500
+    case 'premium': return 999999
     default: return 5
   }
 }

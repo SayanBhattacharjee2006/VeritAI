@@ -1,16 +1,77 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Search, Download, Clock, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useVerificationStore, type InputType } from '@/lib/stores/verification-store'
+import { useAuthStore } from '@/lib/stores/auth-store'
 
 export default function HistoryPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const { history } = useVerificationStore()
+  const { isAuthenticated } = useAuthStore()
+  const [isLoading, setIsLoading] = useState(true)
+  const [backendHistory, setBackendHistory] = useState<typeof history>([])
 
-  const filteredHistory = history.filter((item) =>
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem('veritai-token')
+        if (!token || !isAuthenticated) {
+          setIsLoading(false)
+          return
+        }
+
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/history`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+
+        if (res.ok) {
+          const data = await res.json()
+          const mapped = (data.items ?? []).map((item: {
+            id: string
+            title: string
+            input_type: string
+            input_preview: string
+            timestamp: string
+            claim_count: number
+            accuracy: number
+          }) => ({
+            id: item.id,
+            title: item.title,
+            inputType: item.input_type as InputType,
+            inputPreview: item.input_preview,
+            timestamp: item.timestamp,
+            claimCount: item.claim_count,
+            accuracy: item.accuracy,
+          }))
+          setBackendHistory(mapped)
+        }
+      } catch {
+        // Fall back to Zustand store on error
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchHistory()
+  }, [isAuthenticated])
+
+  const mergedHistory = [
+    ...backendHistory,
+    ...history.filter(
+      (local) => !backendHistory.some((backendItem) => backendItem.id === local.id)
+    ),
+  ].sort(
+    (a, b) =>
+      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  )
+
+  const filteredHistory = mergedHistory.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.inputPreview.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -18,7 +79,7 @@ export default function HistoryPage() {
   const handleExportAll = () => {
     const csv = [
       ['Title', 'Input Type', 'Claims', 'Accuracy', 'Date'],
-      ...history.map((item) => [
+      ...mergedHistory.map((item) => [
         item.title,
         item.inputType,
         item.claimCount,
@@ -75,7 +136,7 @@ export default function HistoryPage() {
 
           <button
             onClick={handleExportAll}
-            disabled={history.length === 0}
+            disabled={mergedHistory.length === 0}
             className="px-4 py-3 rounded-xl btn-ghost disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Download className="w-4 h-4" />
@@ -84,65 +145,78 @@ export default function HistoryPage() {
         </div>
       </motion.div>
 
-      {filteredHistory.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-16 rounded-2xl bg-card-v border border-border-v"
-        >
-          <p className="text-muted-v mb-4">
-            {history.length === 0
-              ? 'No verifications yet. Start by checking a claim.'
-              : 'No results match your search'}
-          </p>
-        </motion.div>
-      ) : (
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredHistory.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="p-5 rounded-2xl bg-card-v border border-border-v hover:bg-card-high transition-colors"
-            >
-              <div className="flex items-start gap-4">
-                <div className="w-11 h-11 rounded-xl bg-surface flex items-center justify-center shrink-0">
-                  {renderIcon(item.inputType)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <h2 className="text-lg font-semibold text-text truncate">{item.title}</h2>
-                  <p className="text-sm text-muted-v mt-1 line-clamp-2">{item.inputPreview}</p>
-                </div>
-              </div>
-
-              <div className="mt-5 flex items-center justify-between text-sm">
-                <div className="flex items-center gap-2 text-muted-v">
-                  <Clock className="w-4 h-4" />
-                  <span>{new Date(item.timestamp).toLocaleDateString()}</span>
-                </div>
-                <span className="text-text font-medium">{item.claimCount} claims</span>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between">
-                <span className="text-xs uppercase tracking-wider text-muted-v">{item.inputType}</span>
-                <span
-                  className={cn(
-                    'px-2.5 py-1 rounded-full text-xs font-semibold',
-                    item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
-                    item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
-                    item.accuracy < 50 && 'bg-red-v/20 text-red-v'
-                  )}
-                >
-                  {item.accuracy}% accuracy
-                </span>
-              </div>
-            </motion.div>
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-44 rounded-2xl bg-card-v border border-border-v animate-pulse"
+            />
           ))}
         </div>
+      ) : (
+        <>
+          {filteredHistory.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-16 rounded-2xl bg-card-v border border-border-v"
+            >
+              <p className="text-muted-v mb-4">
+                {mergedHistory.length === 0
+                  ? 'No verifications yet. Start by checking a claim.'
+                  : 'No results match your search'}
+              </p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredHistory.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="p-5 rounded-2xl bg-card-v border border-border-v hover:bg-card-high transition-colors"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-surface flex items-center justify-center shrink-0">
+                      {renderIcon(item.inputType)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-lg font-semibold text-text truncate">{item.title}</h2>
+                      <p className="text-sm text-muted-v mt-1 line-clamp-2">{item.inputPreview}</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-2 text-muted-v">
+                      <Clock className="w-4 h-4" />
+                      <span>{new Date(item.timestamp).toLocaleDateString()}</span>
+                    </div>
+                    <span className="text-text font-medium">{item.claimCount} claims</span>
+                  </div>
+
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-wider text-muted-v">{item.inputType}</span>
+                    <span
+                      className={cn(
+                        'px-2.5 py-1 rounded-full text-xs font-semibold',
+                        item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
+                        item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
+                        item.accuracy < 50 && 'bg-red-v/20 text-red-v'
+                      )}
+                    >
+                      {item.accuracy}% accuracy
+                    </span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </>
       )}
 
-      {history.length > 0 && (
+      {mergedHistory.length > 0 && !isLoading && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -151,18 +225,18 @@ export default function HistoryPage() {
         >
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
-              <p className="text-2xl font-bold text-text">{history.length}</p>
+              <p className="text-2xl font-bold text-text">{mergedHistory.length}</p>
               <p className="text-sm text-muted-v">Total Reports</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-green-v">
-                {history.reduce((sum, item) => sum + item.claimCount, 0)}
+                {mergedHistory.reduce((sum, item) => sum + item.claimCount, 0)}
               </p>
               <p className="text-sm text-muted-v">Claims Reviewed</p>
             </div>
             <div>
               <p className="text-2xl font-bold text-orange">
-                {`${Math.round(history.reduce((sum, item) => sum + item.accuracy, 0) / history.length)}%`}
+                {`${Math.round(mergedHistory.reduce((sum, item) => sum + item.accuracy, 0) / mergedHistory.length)}%`}
               </p>
               <p className="text-sm text-muted-v">Avg Accuracy</p>
             </div>
