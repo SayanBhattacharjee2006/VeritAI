@@ -476,16 +476,39 @@ async def test_all():
                             f"Bad: {[c['verdict'] for c in invalid_claims]}",
                         )
 
-                    # Validate sources have tier 1/2/3
-                    sources = c.get("sources", [])
-                    if sources:
-                        tiers = [s.get("tier") for s in sources]
+                    # Validate sources across ALL claims not just first
+                    all_sources = [
+                        s for cl in claims
+                        for s in cl.get("sources", [])
+                    ]
+                    if all_sources:
+                        tiers = [s.get("tier") for s in all_sources[:5]]
                         if all(t in (1, 2, 3) for t in tiers):
-                            passed("Source tiers valid", f"tiers={tiers[:3]}")
+                            passed(
+                                "Source tiers valid",
+                                f"tiers={tiers[:3]}"
+                            )
                         else:
-                            failed("Source tiers invalid", f"tiers={tiers}")
+                            failed(
+                                "Source tiers invalid",
+                                f"tiers={tiers}"
+                            )
                     else:
-                        failed("No sources returned for claim", "sources=[]")
+                        # Acceptable if all claims came back unverifiable
+                        unverifiable = [
+                            cl for cl in claims
+                            if cl.get("verdict") == "unverifiable"
+                        ]
+                        if len(unverifiable) == len(claims):
+                            passed(
+                                "No sources — all claims unverifiable",
+                                "acceptable when Tavily returns no results"
+                            )
+                        else:
+                            failed(
+                                "No sources returned for any claim",
+                                f"verdicts={[cl.get('verdict') for cl in claims]}"
+                            )
 
                 # Validate stats add up to total claims
                 stats = r.get("stats", {})

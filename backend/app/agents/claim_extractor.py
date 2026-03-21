@@ -1,4 +1,5 @@
 import json
+import re
 import uuid
 
 from app.models.claim import ExtractedClaim
@@ -34,7 +35,13 @@ async def extract_claims(text: str) -> list[ExtractedClaim]:
         if isinstance(parsed, list):
             claim_texts = parsed
         elif isinstance(parsed, dict):
-            claim_texts = parsed.get('claims', list(parsed.values())[0] if parsed else [])
+            raw_claims = parsed.get('claims', list(parsed.values())[0] if parsed else [])
+            if isinstance(raw_claims, list):
+                claim_texts = raw_claims
+            elif isinstance(raw_claims, str):
+                claim_texts = [raw_claims]
+            else:
+                claim_texts = []
         else:
             claim_texts = []
     except json.JSONDecodeError:
@@ -42,6 +49,13 @@ async def extract_claims(text: str) -> list[ExtractedClaim]:
             line.strip().strip('"').strip("'")
             for line in raw.splitlines()
             if len(line.strip()) > 20
+        ]
+
+    if not claim_texts:
+        claim_texts = [
+            sentence.strip()
+            for sentence in re.split(r'(?<=[.!?])\s+', text)
+            if len(sentence.strip()) > 10
         ]
 
     claims: list[ExtractedClaim] = []
