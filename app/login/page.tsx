@@ -20,13 +20,14 @@ interface FormErrors {
 
 export default function AuthPage() {
   const router = useRouter()
-  const { login } = useAuthStore()
+  const { login, setPlan } = useAuthStore()
   const { addToast } = useUIStore()
   
   const [mode, setMode] = useState<AuthMode>('login')
   const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   
   // Form state
   const [name, setName] = useState('')
@@ -71,27 +72,51 @@ export default function AuthPage() {
     
     if (!validateForm()) return
     
+    setSubmitError('')
     setIsLoading(true)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Mock successful login/signup
-    login({
-      id: '1',
-      name: mode === 'signup' ? name : 'Demo User',
-      email,
-      avatar: undefined,
-    })
-    
-    addToast({
-      title: mode === 'login' ? 'Welcome back!' : 'Account created!',
-      description: 'Redirecting to dashboard...',
-      type: 'success',
-    })
-    
-    setIsLoading(false)
-    router.push('/dashboard')
+
+    try {
+      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register'
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(
+          mode === 'login'
+            ? { email, password }
+            : { name, email, password }
+        ),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          typeof data?.detail === 'string' ? data.detail : 'Authentication failed'
+        )
+      }
+
+      localStorage.setItem('veritai-token', data.access_token)
+      login(data.user)
+      if (data.user?.plan) {
+        setPlan(data.user.plan)
+      }
+
+      addToast({
+        title: mode === 'login' ? 'Welcome back!' : 'Account created!',
+        description: 'Redirecting to dashboard...',
+        type: 'success',
+      })
+
+      router.push('/dashboard')
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : 'Authentication failed'
+      )
+    } finally {
+      setIsLoading(false)
+    }
   }
   
   return (
@@ -336,6 +361,9 @@ export default function AuthPage() {
                 mode === 'login' ? 'Login' : 'Sign Up'
               )}
             </motion.button>
+            {submitError && (
+              <p className="text-sm text-red-v text-center">{submitError}</p>
+            )}
           </form>
           {/* Footer text */}
           <p className="text-center text-sm text-muted-v mt-6">
