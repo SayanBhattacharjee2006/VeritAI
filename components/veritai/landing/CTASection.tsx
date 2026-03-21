@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -7,7 +7,7 @@ import { MagneticButton } from '../MagneticButton'
 
 export function CTASection() {
   return (
-    <section className="py-32 relative overflow-hidden bg-[#0D0D0D] border-t border-[#141414]">
+    <section className="py-32 relative overflow-hidden bg-[#000000] border-t border-[#141414]">
       {/* Floating 3D Triangle Shapes (Afterglow style) */}
       <div className="absolute inset-0 pointer-events-none z-0">
         <motion.div

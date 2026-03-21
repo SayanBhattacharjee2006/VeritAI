@@ -7,13 +7,13 @@ export function AIDetectionSection() {
   const prob = 73
 
   return (
-    <section id="ai-detection" className="py-24 relative overflow-hidden bg-[#0D0D0D]">
+    <section id="ai-detection" className="py-24 relative overflow-hidden bg-[#000000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-50px' }}
+          viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: 0.8 }}
           className="relative rounded-[2.5rem] bg-[#141414] border border-[#2A2A2A] p-8 lg:p-16 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 overflow-hidden group shadow-2xl"
         >
@@ -45,7 +45,7 @@ export function AIDetectionSection() {
 
           {/* Right Content - Mockup Meter */}
           <div className="flex-1 w-full max-w-md relative z-10">
-            <div className="rounded-2xl bg-[#0D0D0D] border border-[#2A2A2A] p-8 shadow-inner relative overflow-hidden">
+            <div className="rounded-2xl bg-[#000000] border border-[#2A2A2A] p-8 shadow-inner relative overflow-hidden">
               
               <div className="absolute -right-4 -top-4 w-24 h-24 bg-[#FF6B2B]/20 rounded-full blur-2xl" />
 
@@ -84,7 +84,7 @@ export function AIDetectionSection() {
                 {/* Tick Marks */}
                 <div className="absolute inset-0 flex justify-between px-1 items-center opacity-30">
                   {[25, 50, 75].map((tick) => (
-                    <div key={tick} className="w-0.5 h-full bg-[#0D0D0D]" style={{ left: `${tick}%`, position: 'absolute' }} />
+                    <div key={tick} className="w-0.5 h-full bg-[#000000]" style={{ left: `${tick}%`, position: 'absolute' }} />
                   ))}
                 </div>
               </div>

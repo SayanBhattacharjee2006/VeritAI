@@ -9,8 +9,8 @@ import { MagneticButton } from '../MagneticButton'
 
 const navLinks = [
   { href: '#home', label: 'Home' },
-  { href: '#features', label: 'Features' },
   { href: '#how-it-works', label: 'How It Works' },
+  { href: '#features', label: 'Features' },
   { href: '#pricing', label: 'Pricing' },
 ]
 
@@ -32,7 +32,7 @@ export function Navbar() {
       transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-        scrolled ? 'bg-[#0D0D0D]/70 backdrop-blur-md border-b border-[#2A2A2A] shadow-lg py-3' : 'bg-transparent py-5'
+        scrolled ? 'bg-[#000000]/70 backdrop-blur-md shadow-lg py-3' : 'bg-transparent py-5'
       )}
     >
       <nav className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -57,15 +57,11 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setActiveLink(link.href)}
-                  className="relative px-5 py-2 text-sm font-medium text-[#A0A0A0] hover:text-white transition-colors"
-                >
-                  {activeLink === link.href && (
-                    <motion.div
-                      layoutId="activeNavBg"
-                      className="absolute inset-0 bg-[#2A2A2A] rounded-full"
-                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    />
+                  className={cn(
+                    "relative px-5 py-2 text-sm font-medium transition-colors hover:text-white",
+                    activeLink === link.href ? "text-white" : "text-[#A0A0A0]"
                   )}
+                >
                   <span className="relative z-10">{link.label}</span>
                 </Link>
               ))}
@@ -81,7 +77,7 @@ export function Navbar() {
               <MagneticButton>
                 <Link
                   href="/login"
-                  className="relative inline-flex px-6 py-2.5 rounded-full bg-[#0D0D0D] text-white text-sm font-semibold transition-all group-hover:bg-transparent tracking-wide"
+                  className="relative inline-flex px-6 py-2.5 rounded-full bg-[#000000] text-white text-sm font-semibold transition-all group-hover:bg-transparent tracking-wide"
                 >
                   <span className="relative z-10">Try for Free</span>
                 </Link>

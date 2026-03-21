@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
@@ -54,7 +54,7 @@ const plans = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 relative overflow-hidden bg-[#0D0D0D]">
+    <section id="pricing" className="py-24 relative overflow-hidden bg-[#000000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center mb-16">
           <h2 className="font-sans text-4xl lg:text-5xl font-bold text-white mb-6">
@@ -71,14 +71,13 @@ export function PricingSection() {
               key={plan.name}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={{ once: true, amount: 0.1 }}
               transition={{ duration: 0.6, delay: index * 0.15 }}
-              whileHover={{ y: -8, transition: { type: 'spring', stiffness: 400 } }}
               className={cn(
-                'relative flex flex-col rounded-[2rem] p-8 lg:p-10 backdrop-blur-md transition-all duration-300',
+                'relative flex flex-col rounded-[2rem] p-8 lg:p-10 backdrop-blur-md transition-all duration-300 hover:-translate-y-2',
                 plan.highlighted
-                  ? 'bg-[#1A1A1A] shadow-[0_0_50px_rgba(255,107,43,0.15)] border border-[#FF6B2B]/50'
-                  : 'bg-[#141414] border border-[#2A2A2A] hover:border-[#3A3A3A]'
+                  ? 'bg-[#1A1A1A] shadow-[0_0_50px_rgba(255,107,43,0.15)] border border-[#FF6B2B]/50 hover:shadow-[0_0_60px_rgba(255,107,43,0.25)]'
+                  : 'bg-[#141414] border border-[#2A2A2A] hover:border-[#FF6B2B]/40 hover:shadow-[0_0_30px_rgba(255,107,43,0.1)]'
               )}
             >
               {plan.highlighted && (

@@ -1,11 +1,11 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { ShieldCheck } from 'lucide-react'
 
 export function Footer() {
   return (
-    <footer className="bg-[#0D0D0D] border-t border-[#1A1A1A] py-12 pt-16">
+    <footer className="bg-[#000000] border-t border-[#1A1A1A] py-12 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           
@@ -27,7 +27,7 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-[#1A1A1A] flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-[#666666]">
-          <p>© 2025 VerifyAI. Built for truth.</p>
+          <p>Â© 2025 VerifyAI. Built for truth.</p>
           <div className="flex gap-4">
              <Link href="#" className="hover:text-[#A0A0A0] transition-colors">Privacy Policy</Link>
              <Link href="#" className="hover:text-[#A0A0A0] transition-colors">Terms of Service</Link>

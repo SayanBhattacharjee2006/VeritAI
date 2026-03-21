@@ -5,7 +5,7 @@ import { Sparkles, Activity, ShieldAlert, Cpu } from 'lucide-react'
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 relative overflow-hidden bg-[#0D0D0D]">
+    <section id="features" className="py-24 relative overflow-hidden bg-[#000000]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="font-sans text-4xl lg:text-5xl font-bold text-white mb-6 tracking-tight">
@@ -36,11 +36,11 @@ export function FeaturesSection() {
               </div>
               <h3 className="text-3xl font-bold text-white mb-4">Multi-Step Agentic Pipeline</h3>
               <p className="text-[#A0A0A0] text-lg leading-relaxed">
-                Watch the AI think — live streaming output shows every step: <span className="text-white">Extracting → Searching → Verifying</span>. Real-time transparency at unprecedented scale.
+                Watch the AI think â€” live streaming output shows every step: <span className="text-white">Extracting â†’ Searching â†’ Verifying</span>. Real-time transparency at unprecedented scale.
               </p>
             </div>
             
-            <div className="relative z-10 flex-1 w-full bg-[#0D0D0D] rounded-2xl border border-[#2A2A2A] p-6 shadow-inner overflow-hidden">
+            <div className="relative z-10 flex-1 w-full bg-[#000000] rounded-2xl border border-[#2A2A2A] p-6 shadow-inner overflow-hidden">
                {/* Mockup Progress Visual */}
                <div className="space-y-4">
                  {[
@@ -82,7 +82,7 @@ export function FeaturesSection() {
               </div>
               <h3 className="text-2xl font-bold text-white mb-4">Confidence Scoring</h3>
               <p className="text-[#A0A0A0] leading-relaxed mb-8">
-                Every claim gets a 0–100% confidence score backed by cited sources. Never guess the reliability of information again.
+                Every claim gets a 0â€“100% confidence score backed by cited sources. Never guess the reliability of information again.
               </p>
               
               <div className="mt-auto h-32 flex items-end justify-center gap-4 border-b border-[#2A2A2A] pb-0 relative">

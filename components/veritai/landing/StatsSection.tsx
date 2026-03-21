@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { motion, useMotionValue, useSpring, useTransform, useInView } from 'framer-motion'
 import { useEffect, useRef } from 'react'
@@ -14,7 +14,7 @@ interface StatCardProps {
 
 function StatCard({ value, numericValue, label, suffix = '', index }: StatCardProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const isInView = useInView(ref, { once: true, amount: 0.1 })
   
   const motionValue = useMotionValue(0)
   const spring = useSpring(motionValue, { stiffness: 50, damping: 20 })
@@ -31,7 +31,7 @@ function StatCard({ value, numericValue, label, suffix = '', index }: StatCardPr
       ref={ref}
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
+      viewport={{ once: true, amount: 0.1 }}
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
       whileHover={{ y: -6, transition: { type: 'spring', stiffness: 300 } }}
       className="relative group"

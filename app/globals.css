@@ -5,7 +5,7 @@
 
 :root {
   /* VeritAI Design System (Afterglow aesthetic) */
-  --bg: #0D0D0D;
+  --bg: #000000;
   --surface: #141414;
   --card: #1A1A1A;
   --card-high: #222222;
@@ -21,19 +21,19 @@
   --muted: #A0A0A0;
   
   /* Mapped to Tailwind conventions */
-  --background: #0D0D0D;
+  --background: #000000;
   --foreground: #FFFFFF;
   --card-foreground: #FFFFFF;
   --popover: #1A1A1A;
   --popover-foreground: #FFFFFF;
-  --primary-foreground: #0D0D0D;
+  --primary-foreground: #000000;
   --secondary: #222222;
   --secondary-foreground: #FFFFFF;
   --muted-foreground: #A0A0A0;
   --accent: #222222;
   --accent-foreground: #FFFFFF;
   --destructive: #FF6B6B;
-  --destructive-foreground: #0D0D0D;
+  --destructive-foreground: #000000;
   --input: #2A2A2A;
   --ring: #FF6B2B;
   --radius: 0.75rem;
@@ -41,7 +41,7 @@
   --sidebar: #141414;
   --sidebar-foreground: #FFFFFF;
   --sidebar-primary: #FF9F1C;
-  --sidebar-primary-foreground: #0D0D0D;
+  --sidebar-primary-foreground: #000000;
   --sidebar-accent: #222222;
   --sidebar-accent-foreground: #FFFFFF;
   --sidebar-border: #2A2A2A;

@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { Eye, EyeOff, ShieldCheck } from 'lucide-react'
+import { ShieldCheck } from 'lucide-react'
 
 // Apple Logo SVG
 const AppleIcon = () => (
@@ -22,13 +22,12 @@ const GoogleIcon = () => (
   </svg>
 )
 
-export default function LoginPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [errors, setErrors] = useState<{ email?: boolean, password?: boolean }>({})
+export default function SignupPage() {
+  const [errors, setErrors] = useState<{ email?: boolean, first?: boolean, last?: boolean }>({})
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setErrors({ email: true, password: true })
+    setErrors({ email: true, first: true, last: true })
     setTimeout(() => setErrors({}), 600)
   }
 
@@ -56,17 +55,17 @@ export default function LoginPage() {
       >
         {/* TOP RIGHT LINK */}
         <div className="absolute -top-12 right-0">
-          <Link href="/signup" className="text-[14px] text-white hover:text-white/80 transition-colors underline underline-offset-4 decoration-white/40 font-normal">
-            Sign up
+          <Link href="/login" className="text-[14px] text-white hover:text-white/80 transition-colors underline underline-offset-4 decoration-white/40 font-normal">
+            Log in
           </Link>
         </div>
 
 
 
         {/* TITLE */}
-        <div className="text-center mb-[28px] leading-tight">
+        <div className="text-center mb-[28px] leading-tight flex flex-col items-center justify-center">
           <h1 className="text-[32px] text-white tracking-tight flex flex-col justify-center items-center">
-            <span className="font-light tracking-wide">Log In to </span>
+            <span className="font-light tracking-wide">Sign up for </span>
             <span className="font-bold -mt-1">VeritAI</span>
           </h1>
         </div>
@@ -74,7 +73,33 @@ export default function LoginPage() {
         {/* FORM */}
         <form onSubmit={handleSubmit} className="flex flex-col">
           
-          <div className="flex flex-col gap-[14px] mb-[8px]">
+          <div className="flex justify-between gap-[12px] mb-[14px]">
+            {/* First Name Field */}
+            <div className="flex flex-col flex-1 w-full">
+              <label className="text-[13px] text-[rgba(255,255,255,0.5)] mb-1.5 ml-1">First name</label>
+              <motion.div animate={errors.first ? { x: [-4, 4, -4, 4, 0] } : {}} transition={{ duration: 0.4 }} className="flex-1 w-full">
+                <input 
+                  type="text" 
+                  placeholder="First" 
+                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.first ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`}
+                />
+              </motion.div>
+            </div>
+
+            {/* Last Name Field */}
+            <div className="flex flex-col flex-1 w-full">
+              <label className="text-[13px] text-[rgba(255,255,255,0.5)] mb-1.5 ml-1">Last name</label>
+              <motion.div animate={errors.last ? { x: [-4, 4, -4, 4, 0] } : {}} transition={{ duration: 0.4 }} className="flex-1 w-full">
+                <input 
+                  type="text" 
+                  placeholder="Last" 
+                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.last ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`}
+                />
+              </motion.div>
+            </div>
+          </div>
+
+          <div className="flex flex-col mb-[28px]">
             {/* Email Field */}
             <div className="flex flex-col">
               <label className="text-[13px] text-[rgba(255,255,255,0.5)] mb-1.5 ml-1">Email address</label>
@@ -86,32 +111,6 @@ export default function LoginPage() {
                 />
               </motion.div>
             </div>
-
-            {/* Password Field */}
-            <div className="flex flex-col">
-              <label className="text-[13px] text-[rgba(255,255,255,0.5)] mb-1.5 ml-1">Password</label>
-              <motion.div animate={errors.password ? { x: [-4, 4, -4, 4, 0] } : {}} transition={{ duration: 0.4 }} className="relative">
-                <input 
-                  type={showPassword ? 'text' : 'password'} 
-                  placeholder="Enter your password" 
-                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] pl-[20px] pr-[44px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.password ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`}
-                />
-                <button 
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-[16px] top-1/2 -translate-y-1/2 text-[rgba(255,255,255,0.4)] hover:text-white transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Forgot Password */}
-          <div className="flex justify-end mb-[20px]">
-            <Link href="/forgot-password" className="text-[13px] text-[rgba(255,255,255,0.5)] hover:text-white transition-colors hover:underline underline-offset-4">
-              Forgot Password?
-            </Link>
           </div>
 
           {/* Primary CTA button */}
@@ -119,9 +118,9 @@ export default function LoginPage() {
             whileHover={{ scale: 1.02, filter: 'brightness(1.1)' }}
             whileTap={{ scale: 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="w-full h-[56px] mb-[16px] rounded-[50px] bg-gradient-to-r from-[#FF4500] via-[#FFB800] to-[#FFE033] text-white font-semibold text-[16px] shadow-[0_8px_32px_rgba(255,69,0,0.45)]"
+            className="w-full h-[56px] mb-[16px] rounded-[50px] bg-gradient-to-r from-[#FF4500] via-[#FFB800] to-[#FFE033] text-white font-semibold text-[16px] shadow-[0_8px_32px_rgba(255,100,0,0.45)]"
           >
-            Login
+            Continue
           </motion.button>
         </form>
 
@@ -133,7 +132,7 @@ export default function LoginPage() {
         </div>
 
         {/* Social Buttons */}
-        <div className="flex justify-between gap-[12px]">
+        <div className="flex justify-between gap-[12px] mb-[24px]">
           <button className="flex-1 h-[52px] flex items-center justify-center gap-[8px] bg-[rgba(255,255,255,0.08)] border border-[rgba(255,255,255,0.12)] rounded-[50px] hover:bg-[rgba(255,255,255,0.12)] transition-colors text-white text-[15px] font-medium">
             <AppleIcon />
             Apple
@@ -142,6 +141,16 @@ export default function LoginPage() {
             <GoogleIcon />
             Google
           </button>
+        </div>
+
+        {/* BOTTOM LINK */}
+        <div className="text-center pb-6">
+          <p className="text-[13px] text-[rgba(255,255,255,0.5)]">
+            Already have an account?{' '}
+            <Link href="/login" className="text-[#FF5500] hover:text-[#FF6600] transition-colors border-b border-transparent hover:border-[#FF6600]">
+              Log in
+            </Link>
+          </p>
         </div>
 
       </motion.div>
