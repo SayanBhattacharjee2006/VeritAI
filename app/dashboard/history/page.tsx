@@ -1,17 +1,24 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
+import { useSearchParams } from 'next/navigation'
 import { Search, Download, Clock, FileText, Link as LinkIcon, Image as ImageIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useVerificationStore, type InputType } from '@/lib/stores/verification-store'
 import { useAuthStore } from '@/lib/stores/auth-store'
 
-export default function HistoryPage() {
-  const [searchQuery, setSearchQuery] = useState('')
+function HistoryContent() {
+  const searchParams = useSearchParams()
+  const queryFromUrl = searchParams.get('q') ?? ''
+  const [searchQuery, setSearchQuery] = useState(queryFromUrl)
   const { history } = useVerificationStore()
   const [isLoading, setIsLoading] = useState(true)
   const [backendHistory, setBackendHistory] = useState<typeof history>([])
+
+  useEffect(() => {
+    setSearchQuery(queryFromUrl)
+  }, [queryFromUrl])
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -50,6 +57,8 @@ export default function HistoryPage() {
             accuracy: item.accuracy,
           }))
           setBackendHistory(mapped)
+        } else {
+          console.warn('History fetch failed:', res.status)
         }
       } catch {
         // Fall back to Zustand store on error
@@ -250,5 +259,24 @@ export default function HistoryPage() {
         </motion.div>
       )}
     </div>
+  )
+}
+
+export default function HistoryPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="h-44 rounded-2xl bg-card-v border border-border-v animate-pulse"
+            />
+          ))}
+        </div>
+      }
+    >
+      <HistoryContent />
+    </Suspense>
   )
 }

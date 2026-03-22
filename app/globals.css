@@ -17,6 +17,7 @@
   --amber: #F59E0B;
   --green: #4AE176;
   --red: #FF6B6B;
+  --success: #4AE176;
   --text: #DEE1F7;
   --muted: #8892A4;
   
@@ -62,6 +63,7 @@
   --amber: #B45309;
   --green: #15803D;
   --red: #DC2626;
+  --success: #15803D;
   --text: #0F172A;
   --muted: #475569;
 
@@ -107,6 +109,7 @@
   --color-red-v: var(--red);
   --color-text: var(--text);
   --color-muted-v: var(--muted);
+  --color-success: var(--green);
   
   --color-background: var(--background);
   --color-foreground: var(--foreground);

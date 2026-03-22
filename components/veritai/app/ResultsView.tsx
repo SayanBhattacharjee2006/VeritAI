@@ -331,7 +331,7 @@ export function ResultsView() {
                 <span className="text-sm font-semibold text-text">Key Takeaways</span>
               </div>
               <ul className="space-y-1">
-                {report.takeaways.slice(0, 2).map((takeaway, index) => (
+                {report.takeaways.slice(0, 3).map((takeaway, index) => (
                   <li key={index} className="text-sm text-muted-v flex items-start gap-2">
                     <span className="text-cyan shrink-0">&bull;</span>
                     <span className="text-sm text-muted-v leading-relaxed">{takeaway}</span>

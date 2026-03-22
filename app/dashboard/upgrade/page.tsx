@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Check, X, Zap } from 'lucide-react'
 import { useAuthStore } from '@/lib/stores/auth-store'
@@ -65,9 +65,9 @@ const plans = [
 ]
 
 const planColors = {
-  free: 'from-blue-500/20 to-cyan-500/20',
-  pro: 'from-purple-500/20 to-pink-500/20',
-  premium: 'from-amber-500/20 to-orange-500/20',
+  free: 'from-cyan/10 to-primary-v/10',
+  pro: 'from-orange/10 to-amber/10',
+  premium: 'from-amber/10 to-green-v/10',
 } as const
 
 export default function UpgradePage() {
@@ -141,17 +141,17 @@ export default function UpgradePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-text mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-muted-v">
             Choose the perfect plan for your fact-checking needs
           </p>
         </motion.div>
@@ -170,30 +170,30 @@ export default function UpgradePage() {
               <div
                 className={`absolute inset-0 bg-gradient-to-br ${planColors[plan.id]} opacity-50`}
               />
-              <div className="absolute inset-0 border border-border/50" />
+              <div className="absolute inset-0 border border-border-v/50" />
 
               <div className="relative z-10 p-8">
                 {plan.highlighted && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-2">
+                    <div className="btn-primary px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-2">
                       <Zap className="w-4 h-4" />
                       Most Popular
                     </div>
                   </div>
                 )}
 
-                <h3 className="text-2xl font-bold text-foreground mb-2">
+                <h3 className="text-2xl font-bold text-text mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-6">
+                <p className="text-muted-v text-sm mb-6">
                   {plan.description}
                 </p>
 
                 <div className="mb-8">
-                  <span className="text-4xl font-bold text-foreground">
+                  <span className="text-4xl font-bold text-text">
                     {plan.price}
                   </span>
-                  <span className="text-muted-foreground ml-1">
+                  <span className="text-muted-v ml-1">
                     {plan.period}
                   </span>
                 </div>
@@ -203,8 +203,8 @@ export default function UpgradePage() {
                   disabled={!planSynced || currentPlan === plan.id || isUpgrading === plan.id}
                   className={`w-full py-3 rounded-lg font-semibold transition-all mb-8 ${
                     plan.highlighted
-                      ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                      : 'bg-background/50 text-foreground border border-border hover:bg-background'
+                      ? 'btn-primary'
+                      : 'btn-ghost'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {!planSynced
@@ -217,7 +217,7 @@ export default function UpgradePage() {
                 </button>
 
                 <div className="space-y-4">
-                  <p className="text-sm font-semibold text-foreground mb-4">
+                  <p className="text-sm font-semibold text-text mb-4">
                     What's included:
                   </p>
                   {plan.features.map((feature, i) => (
@@ -225,16 +225,16 @@ export default function UpgradePage() {
                       key={i}
                       className="flex items-start gap-3"
                     >
-                      <Check className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-foreground/80">
+                      <Check className="w-5 h-5 text-green-v flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-text/80">
                         {feature}
                       </span>
                     </div>
                   ))}
 
                   {plan.notIncluded.length > 0 && (
-                    <div className="pt-6 border-t border-border/50 space-y-3">
-                      <p className="text-xs font-semibold text-muted-foreground uppercase">
+                    <div className="pt-6 border-t border-border-v/50 space-y-3">
+                      <p className="text-xs font-semibold text-muted-v uppercase">
                         Not included
                       </p>
                       {plan.notIncluded.map((feature, i) => (
@@ -242,8 +242,8 @@ export default function UpgradePage() {
                           key={i}
                           className="flex items-start gap-3"
                         >
-                          <X className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-foreground/60">
+                          <X className="w-5 h-5 text-muted-v flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-text/60">
                             {feature}
                           </span>
                         </div>
@@ -262,7 +262,7 @@ export default function UpgradePage() {
           transition={{ delay: 0.3 }}
           className="max-w-3xl mx-auto"
         >
-          <h2 className="text-2xl font-bold text-foreground mb-8 text-center">
+          <h2 className="text-2xl font-bold text-text mb-8 text-center">
             Frequently Asked Questions
           </h2>
 
@@ -287,12 +287,12 @@ export default function UpgradePage() {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                className="bg-card/50 backdrop-blur-sm border border-border rounded-lg p-6"
+                className="bg-card-v border border-border-v rounded-xl p-6"
               >
-                <h3 className="font-semibold text-foreground mb-2">
+                <h3 className="font-semibold text-text mb-2">
                   {item.q}
                 </h3>
-                <p className="text-muted-foreground text-sm">{item.a}</p>
+                <p className="text-muted-v text-sm">{item.a}</p>
               </motion.div>
             ))}
           </div>
@@ -304,10 +304,10 @@ export default function UpgradePage() {
           transition={{ delay: 0.4 }}
           className="mt-16 text-center"
         >
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-v mb-4">
             Need help choosing the right plan?
           </p>
-          <button className="text-primary font-semibold hover:underline">
+          <button className="text-orange font-semibold hover:underline">
             Contact our sales team →
           </button>
         </motion.div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -30,12 +31,13 @@ const navItems = [
 ]
 
 interface AppLayoutProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const [searchValue, setSearchValue] = useState('')
   const { sidebarCollapsed, toggleSidebar, theme, toggleTheme } = useUIStore()
   const { user, plan, logout } = useAuthStore()
   const { reset } = useVerificationStore()
@@ -210,6 +212,14 @@ export function AppLayout({ children }: AppLayoutProps) {
                     <input
                       type="search"
                       placeholder="Search history..."
+                      value={searchValue}
+                      onChange={(e) => setSearchValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && searchValue.trim()) {
+                          router.push(`/dashboard/history?q=${encodeURIComponent(searchValue.trim())}`)
+                          setSearchValue('')
+                        }
+                      }}
                       className="w-full pl-10 pr-4 py-2 rounded-lg bg-surface border border-border-v text-sm text-text placeholder:text-muted-v focus:outline-none focus:ring-2 focus:ring-primary-glow/30"
                     />
                   </div>

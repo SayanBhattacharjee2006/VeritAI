@@ -14,7 +14,9 @@ interface AuthState {
     avatar?: string
   } | null
   isAuthenticated: boolean
-  
+  _hasHydrated: boolean
+
+  setHasHydrated: (val: boolean) => void
   setPlan: (plan: Plan) => void
   incrementChecks: () => void
   resetDailyChecks: () => void
@@ -34,41 +36,44 @@ const getPlanLimits = (plan: Plan): number => {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       plan: 'free',
       dailyChecksUsed: 0,
       maxDailyChecks: 5,
       user: null,
       isAuthenticated: false,
-      
-      setPlan: (plan) => set({ 
-        plan, 
-        maxDailyChecks: getPlanLimits(plan) 
+      _hasHydrated: false,
+
+      setHasHydrated: (val) => set({ _hasHydrated: val }),
+
+      setPlan: (plan) => set({
+        plan,
+        maxDailyChecks: getPlanLimits(plan),
       }),
-      
-      incrementChecks: () => set((state) => ({ 
-        dailyChecksUsed: state.dailyChecksUsed + 1 
-      })),
-      
+
+      incrementChecks: () =>
+        set((state) => ({ dailyChecksUsed: state.dailyChecksUsed + 1 })),
+
       resetDailyChecks: () => set({ dailyChecksUsed: 0 }),
-      
+
       setUser: (user) => set({ user }),
-      
-      login: (user) => set({ 
-        user, 
-        isAuthenticated: true 
-      }),
-      
-      logout: () => set({ 
-        user: null, 
-        isAuthenticated: false,
-        plan: 'free',
-        dailyChecksUsed: 0,
-        maxDailyChecks: 5,
-      }),
+
+      login: (user) => set({ user, isAuthenticated: true }),
+
+      logout: () =>
+        set({
+          user: null,
+          isAuthenticated: false,
+          plan: 'free',
+          dailyChecksUsed: 0,
+          maxDailyChecks: 5,
+        }),
     }),
     {
       name: 'veritai-auth',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true)
+      },
     }
   )
 )
