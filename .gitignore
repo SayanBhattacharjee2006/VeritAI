@@ -9,7 +9,7 @@ next.user-config.*
 
 # Environment variables
 .env
-# .env*.local
+.env*.local
 backend/.env
 
 # Common ignores
@@ -26,3 +26,6 @@ backend/**/*.py[cod]
 backend/**/__pycache__/
 backend/.pytest_cache/
 backend/.mypy_cache/
+
+backend/*.log
+backend/uvicorn*.log

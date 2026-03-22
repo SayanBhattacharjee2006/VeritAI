@@ -78,19 +78,19 @@ async def login(body: LoginRequest):
     }
 
 
-@router.get('/auth/debug-db')
-async def debug_db():
-    """Temporary debug endpoint — remove before production"""
-    try:
-        col = users_col()
-        count = await col.count_documents({})
-        return {
-            'status': 'connected',
-            'users_collection': 'exists',
-            'user_count': count,
-        }
-    except Exception as e:
-        return {
-            'status': 'error',
-            'message': str(e),
-        }
+# @router.get('/auth/debug-db')
+# async def debug_db():
+#     """Temporary debug endpoint — remove before production"""
+#     try:
+#         col = users_col()
+#         count = await col.count_documents({})
+#         return {
+#             'status': 'connected',
+#             'users_collection': 'exists',
+#             'user_count': count,
+#         }
+#     except Exception as e:
+#         return {
+#             'status': 'error',
+#             'message': str(e),
+#         }
