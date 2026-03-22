@@ -10,7 +10,7 @@ from fastapi.responses import StreamingResponse
 
 from app.core.security import get_current_user
 from app.models.verification import VerifyRequest
-from app.models.claim import Report, ReportStats, VerifiedClaim
+from app.models.claim import Report, ReportStats, VerifiedClaim, Verdict
 from app.agents.claim_extractor import extract_claims
 from app.agents.claim_refiner import refine_claims
 from app.agents.query_generator import generate_queries
@@ -30,6 +30,31 @@ def sse_event(event_type: str, data: dict) -> str:
     """Format a Server-Sent Event string."""
     payload = json.dumps({'event': event_type, **data})
     return f'data: {payload}\n\n'
+
+
+def _apply_evidence_sufficiency_guard(
+    verdict: Verdict,
+    reasoning: str,
+    confidence: float,
+    sources_count: int,
+) -> tuple[Verdict, str, float]:
+    # Evidence sufficiency check:
+    # If we found very few sources AND confidence is low,
+    # the verdict is based on LLM training data not real
+    # evidence — this is a hallucination risk.
+    # Force to unverifiable to be honest with the user.
+    if sources_count <= 1 and confidence < 60.0:
+        verdict = 'unverifiable'
+        reasoning = (
+            reasoning +
+            ' Note: Insufficient web evidence was found '
+            'to verify this claim with confidence. '
+            'The verdict has been marked unverifiable '
+            'to avoid potentially incorrect conclusions.'
+        )
+        confidence = min(confidence, 45.0)
+
+    return verdict, reasoning, confidence
 
 
 async def run_pipeline(
@@ -217,6 +242,14 @@ async def run_pipeline(
                             verdict, sources, raw_conf, len(snippets)
                         )
                         has_conflict = detect_conflict(sources, snippets)
+                        verdict, reasoning, confidence = (
+                            _apply_evidence_sufficiency_guard(
+                                verdict,
+                                reasoning,
+                                confidence,
+                                len(sources),
+                            )
+                        )
 
                         # Emit verdict to terminal log
                         await emit(log(
