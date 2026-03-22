@@ -65,7 +65,7 @@ export function ResultsView() {
 
     try {
       const { default: jsPDF } = await import('jspdf')
-      const { default: html2canvas } = await import('html2canvas')
+      const { default: html2canvas } = await import('html2canvas-pro')
 
       const reportEl = document.getElementById('veritai-report')
       if (!reportEl) {
@@ -77,33 +77,47 @@ export function ResultsView() {
         return
       }
 
-      // Clone the element to avoid hydration mismatch issues
-      // caused by browser extensions modifying the DOM
-      const clone = reportEl.cloneNode(true) as HTMLElement
-      clone.style.position = 'fixed'
-      clone.style.top = '0'
-      clone.style.left = '0'
-      clone.style.width = reportEl.scrollWidth + 'px'
-      clone.style.zIndex = '-9999'
-      clone.style.pointerEvents = 'none'
-      document.body.appendChild(clone)
+      // ROOT CAUSE FIX 1: Do NOT clone the element.
+      // Cloning breaks CSS variable resolution because html2canvas
+      // renders in an isolated context where var(--bg) etc. don't resolve.
+      // Instead capture the element directly in-place.
+      //
+      // ROOT CAUSE FIX 2: Scroll to top before capture so html2canvas
+      // captures from the beginning of the element, not the viewport.
+      const scrollY = window.scrollY
+      window.scrollTo(0, 0)
 
       let canvas: HTMLCanvasElement
       try {
-        canvas = await html2canvas(clone, {
+        canvas = await html2canvas(reportEl, {
           scale: 2,
           useCORS: true,
           allowTaint: true,
           backgroundColor: '#0A0F1E',
           logging: false,
-          width: reportEl.scrollWidth,
-          height: reportEl.scrollHeight,
+          // Capture the full scrollable height, not just viewport
+          windowWidth: document.documentElement.scrollWidth,
+          windowHeight: document.documentElement.scrollHeight,
+          scrollX: 0,
+          scrollY: 0,
+          // Tell html2canvas to ignore fixed/sticky elements
+          // that might overlay the content
+          ignoreElements: (el) => {
+            const tag = el.tagName?.toLowerCase()
+            // Ignore headers and toasts that sit on top
+            return (
+              el.classList.contains('sticky') ||
+              el.classList.contains('fixed') ||
+              tag === 'header' ||
+              el.id === 'toast-container'
+            )
+          },
         })
       } finally {
-        document.body.removeChild(clone)
+        // Restore scroll position
+        window.scrollTo(0, scrollY)
       }
 
-      // Use mm units - standard and reliable across all jsPDF versions
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
@@ -118,19 +132,16 @@ export function ResultsView() {
       const CONTENT_W = PAGE_W - MARGIN * 2
       const CONTENT_H = PAGE_H - MARGIN * 2 - HEADER_H - FOOTER_H
 
-      // Convert canvas pixels to mm at 96dpi
       // canvas is at scale:2 so effective dpi = 192
       const PX_TO_MM = 25.4 / 192
       const imgHeightMm = canvas.height * PX_TO_MM
-      const imgWidthMm = canvas.width * PX_TO_MM
+      const imgWidthMm  = canvas.width  * PX_TO_MM
 
-      // Scale image to fit content width
-      const scale = CONTENT_W / imgWidthMm
-      const scaledH = imgHeightMm * scale
-      const scaledW = CONTENT_W
+      const scaleRatio = CONTENT_W / imgWidthMm
+      const scaledH    = imgHeightMm * scaleRatio
+      const scaledW    = CONTENT_W
 
-      // Split into pages
-      const totalPages = Math.ceil(scaledH / CONTENT_H)
+      const totalPages = Math.max(1, Math.ceil(scaledH / CONTENT_H))
 
       for (let page = 0; page < totalPages; page++) {
         if (page > 0) pdf.addPage()
@@ -151,28 +162,33 @@ export function ResultsView() {
           MARGIN + 14
         )
 
-        // Clip and draw the relevant slice of the image for this page
-        const srcY = page * CONTENT_H
+        // Calculate the slice of the canvas for this page
+        const srcY   = page * CONTENT_H
         const sliceH = Math.min(CONTENT_H, scaledH - srcY)
 
-        // sourceY in original canvas pixels
-        const canvasSrcY = (srcY / scale) / PX_TO_MM
-        const canvasSliceH = (sliceH / scale) / PX_TO_MM
+        // Convert mm slice coords back to canvas pixel coords
+        const canvasSrcY   = Math.round((srcY    / scaleRatio) / PX_TO_MM)
+        const canvasSliceH = Math.round((sliceH  / scaleRatio) / PX_TO_MM)
 
-        // Create a temporary canvas for just this slice
-        const sliceCanvas = document.createElement('canvas')
-        sliceCanvas.width = canvas.width
-        sliceCanvas.height = Math.round(canvasSliceH)
-        const ctx = sliceCanvas.getContext('2d')
+        // ROOT CAUSE FIX 3: Guard against zero/negative slice height
+        // which happens on the last page when content doesn't fill a full page
+        if (canvasSliceH <= 0) continue
+
+        const sliceCanvas        = document.createElement('canvas')
+        sliceCanvas.width        = canvas.width
+        sliceCanvas.height       = canvasSliceH
+        const ctx                = sliceCanvas.getContext('2d')
+
         if (ctx) {
           ctx.drawImage(
             canvas,
-            0, Math.round(canvasSrcY),
-            canvas.width, Math.round(canvasSliceH),
+            0, canvasSrcY,
+            canvas.width, canvasSliceH,
             0, 0,
-            canvas.width, Math.round(canvasSliceH)
+            canvas.width, canvasSliceH,
           )
         }
+
         const sliceData = sliceCanvas.toDataURL('image/png')
 
         pdf.addImage(
@@ -186,7 +202,13 @@ export function ResultsView() {
 
         // Footer
         pdf.setFillColor(10, 15, 30)
-        pdf.rect(0, PAGE_H - MARGIN - FOOTER_H, PAGE_W, MARGIN + FOOTER_H, 'F')
+        pdf.rect(
+          0,
+          PAGE_H - MARGIN - FOOTER_H,
+          PAGE_W,
+          MARGIN + FOOTER_H,
+          'F',
+        )
         pdf.setFont('helvetica', 'normal')
         pdf.setFontSize(7)
         pdf.setTextColor(136, 146, 164)

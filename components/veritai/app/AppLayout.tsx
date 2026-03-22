@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -13,8 +13,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Crown,
-  Search,
-  Bell,
   Sun,
   Moon,
   LogOut,
@@ -37,7 +35,6 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const [searchValue, setSearchValue] = useState('')
   const { sidebarCollapsed, toggleSidebar, theme, toggleTheme } = useUIStore()
   const { user, plan, logout } = useAuthStore()
   const { reset } = useVerificationStore()
@@ -205,33 +202,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 </Link>
               </div>
 
-              <div className="flex-1 flex justify-center">
-                <div className="w-full max-w-md">
-                  <div className="relative hidden sm:block">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-v" />
-                    <input
-                      type="search"
-                      placeholder="Search history..."
-                      value={searchValue}
-                      onChange={(e) => setSearchValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && searchValue.trim()) {
-                          router.push(`/dashboard/history?q=${encodeURIComponent(searchValue.trim())}`)
-                          setSearchValue('')
-                        }
-                      }}
-                      className="w-full pl-10 pr-4 py-2 rounded-lg bg-surface border border-border-v text-sm text-text placeholder:text-muted-v focus:outline-none focus:ring-2 focus:ring-primary-glow/30"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <button className="relative p-2 rounded-lg hover:bg-surface transition-colors">
-                  <Bell className="w-5 h-5 text-muted-v" />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-red-v" />
-                </button>
-
+              <div className="flex items-center gap-2 shrink-0 ml-auto">
                 <span
                   className={cn(
                     'hidden sm:inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase',
