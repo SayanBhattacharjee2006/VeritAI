@@ -57,4 +57,25 @@ async def extract_text_from_image(image_data: str) -> str:
         }],
         max_tokens=1000,
     )
-    return resp.choices[0].message.content or 'No extractable claims found in image.'
+    text = resp.choices[0].message.content or ''
+
+    # Check if vision returned actual claims or just a description
+    # If GPT says there are no factual claims, return a clear signal
+    no_claims_phrases = [
+        'no factual claims',
+        'no text',
+        'no charts',
+        'no infographics',
+        'does not contain',
+        'cannot be verified',
+        'no verifiable',
+    ]
+    text_lower = text.lower()
+    description_only = sum(
+        1 for phrase in no_claims_phrases if phrase in text_lower
+    ) >= 2
+
+    if description_only:
+        return '__NO_CLAIMS__'
+
+    return text

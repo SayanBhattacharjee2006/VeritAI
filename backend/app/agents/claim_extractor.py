@@ -8,18 +8,26 @@ from app.services.openai_client import chat
 SYSTEM = """You are a precise claim extraction agent for a fact-checking system.
 Your task: extract atomic, verifiable factual claims from the given text.
 
+CRITICAL RULE: Extract ALL factual claims regardless of whether they appear
+true or false. The fact-checking pipeline will determine correctness — you must
+NOT pre-judge. A claim like "The Earth is flat" or "Vaccines cause autism" are
+EXACTLY the kind of claims that must be extracted and fact-checked.
+
 Rules:
 - Each claim must be a single, self-contained, verifiable statement
-- Remove opinions, predictions without specifics, and rhetorical questions
+- Include claims that appear obviously true AND obviously false — both need checking
+- Remove ONLY pure opinions, emotions, and predictions without specifics
 - Keep claims concise (1-2 sentences max)
 - Extract 5-10 claims maximum; prioritize the most specific and checkable ones
 - Do NOT merge multiple facts into one claim
-- Output ONLY a JSON array of strings, no other text
+- Return ONLY a JSON object with a single key "claims" containing an array of strings
 
 Example output:
-["The Eiffel Tower is 330 meters tall.",
- "France joined the EU in 1957.",
- "The population of Paris is 2.1 million."]"""
+{"claims": [
+  "The Eiffel Tower is 330 meters tall.",
+  "The Earth is flat.",
+  "France joined the EU in 1957."
+]}"""
 
 
 async def extract_claims(text: str) -> list[ExtractedClaim]:
@@ -30,32 +38,28 @@ async def extract_claims(text: str) -> list[ExtractedClaim]:
         max_tokens=1500,
         response_format={'type': 'json_object'},
     )
+    claim_texts: list[str] = []
     try:
         parsed = json.loads(raw)
-        if isinstance(parsed, list):
-            claim_texts = parsed
-        elif isinstance(parsed, dict):
-            raw_claims = parsed.get('claims', list(parsed.values())[0] if parsed else [])
-            if isinstance(raw_claims, list):
-                claim_texts = raw_claims
-            elif isinstance(raw_claims, str):
-                claim_texts = [raw_claims]
-            else:
-                claim_texts = []
-        else:
-            claim_texts = []
+        # Always expect {"claims": [...]} — consistent wrapper key
+        if isinstance(parsed, dict):
+            val = parsed.get('claims', parsed.get('statements',
+                  parsed.get('facts', list(parsed.values())[0] if parsed else [])))
+            if isinstance(val, list):
+                claim_texts = [str(v) for v in val if v]
+            elif isinstance(val, str):
+                claim_texts = [val]
+        elif isinstance(parsed, list):
+            claim_texts = [str(v) for v in parsed if v]
     except json.JSONDecodeError:
-        claim_texts = [
-            line.strip().strip('"').strip("'")
-            for line in raw.splitlines()
-            if len(line.strip()) > 20
-        ]
+        # Fallback: extract quoted strings from raw output
+        claim_texts = re.findall(r'"([^"]{15,})"', raw)
 
+    # Last resort: split input into sentences
     if not claim_texts:
         claim_texts = [
-            sentence.strip()
-            for sentence in re.split(r'(?<=[.!?])\s+', text)
-            if len(sentence.strip()) > 10
+            s.strip() for s in re.split(r'(?<=[.!?])\s+', text)
+            if len(s.strip()) > 10
         ]
 
     claims: list[ExtractedClaim] = []

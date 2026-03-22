@@ -52,3 +52,33 @@ async def get_report(
         raise HTTPException(status_code=404, detail='Report not found')
 
     return doc.get('report_json', doc)
+
+
+@router.delete('/history/{report_id}')
+async def delete_report(
+    report_id: str,
+    current_user: dict = Depends(get_current_user),
+):
+    user_id = current_user['sub']
+    col = history_col()
+
+    result = await col.delete_one(
+        {'id': report_id, 'user_id': user_id}
+    )
+
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail='Report not found')
+
+    return {'deleted': report_id}
+
+
+@router.delete('/history')
+async def delete_all_history(
+    current_user: dict = Depends(get_current_user),
+):
+    user_id = current_user['sub']
+    col = history_col()
+
+    result = await col.delete_many({'user_id': user_id})
+
+    return {'deleted_count': result.deleted_count}

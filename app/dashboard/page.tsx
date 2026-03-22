@@ -3,40 +3,55 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { useState, useRef } from 'react'
 import { cn } from '@/lib/utils'
-import { 
-  FileText, 
-  Link as LinkIcon, 
-  Image, 
-  Sparkles, 
+import {
+  Bot,
+  FileText,
+  Link as LinkIcon,
+  type LucideIcon,
+  Image,
+  Sparkles,
   Upload,
   X,
   ExternalLink,
-  Clock
+  Clock,
 } from 'lucide-react'
-import { useVerificationStore, type InputType } from '@/lib/stores/verification-store'
+import { useVerificationStore, type InputType, type ProcessingStep } from '@/lib/stores/verification-store'
 import { useAuthStore } from '@/lib/stores/auth-store'
 import { useUIStore } from '@/lib/stores/ui-store'
 import { ProcessingView } from '@/components/veritai/app/ProcessingView'
 import { ResultsView } from '@/components/veritai/app/ResultsView'
+import { AIDetectResultView } from '@/components/veritai/app/AIDetectResultView'
 
-const inputTabs: { id: InputType; label: string; icon: typeof FileText }[] = [
+const inputTabs: { id: InputType; label: string; icon: LucideIcon }[] = [
   { id: 'text', label: 'Text', icon: FileText },
   { id: 'url', label: 'URL', icon: LinkIcon },
   { id: 'image', label: 'Image', icon: Image },
+  { id: 'ai-detect', label: 'AI Detect', icon: Bot },
+]
+
+const aiDetectSteps: ProcessingStep[] = [
+  {
+    id: 'detect',
+    label: 'Detecting AI Signals',
+    status: 'active',
+    subLabel: 'Scanning style and generation patterns',
+  },
 ]
 
 function IdleView() {
   const [activeTab, setActiveTab] = useState<InputType>('text')
+  const [aiDetectMode, setAIDetectMode] = useState<'text' | 'image'>('text')
   const [textInput, setTextInput] = useState('')
   const [urlInput, setUrlInput] = useState('')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  
+
   const { startVerification, history } = useVerificationStore()
   const { dailyChecksUsed, maxDailyChecks } = useAuthStore()
-  
+  const { addToast } = useUIStore()
+
   const fileToBase64 = (file: File) =>
     new Promise<string>((resolve, reject) => {
       const reader = new FileReader()
@@ -53,9 +68,8 @@ function IdleView() {
     })
 
   const handleStartVerification = async () => {
-    // Check daily limit first
     if (dailyChecksUsed >= maxDailyChecks) {
-      useUIStore.getState().addToast({
+      addToast({
         title: 'Daily limit reached',
         description: `You've used all ${maxDailyChecks} verifications for today. Upgrade for more.`,
         type: 'warning',
@@ -63,20 +77,99 @@ function IdleView() {
       return
     }
 
+    if (activeTab === 'ai-detect') {
+      const token = localStorage.getItem('veritai-token')
+      let detectContent = ''
+      let detectType: 'text' | 'image' = 'text'
+
+      if (aiDetectMode === 'text') {
+        detectContent = textInput.trim()
+        detectType = 'text'
+      } else if (aiDetectMode === 'image' && imageFile) {
+        try {
+          detectContent = await fileToBase64(imageFile)
+          detectType = 'image'
+        } catch {
+          useUIStore.getState().addToast({
+            title: 'Image upload failed',
+            description: 'Could not process the selected image.',
+            type: 'error',
+          })
+          return
+        }
+      }
+
+      if (!detectContent) return
+
+      useVerificationStore.setState({
+        state: 'processing',
+        currentInput: {
+          type: 'ai-detect',
+          content: aiDetectMode === 'image'
+            ? imageFile?.name ?? 'Uploaded image'
+            : detectContent,
+        },
+        processingSteps: aiDetectSteps,
+        terminalLines: [],
+        report: null,
+        aiDetectResult: null,
+      })
+      useVerificationStore.getState().addTerminalLine({
+        text: `Analyzing ${detectType} for AI-generated content...`,
+        type: 'info',
+      })
+
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/ai-detect`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token ?? ''}`,
+            },
+            body: JSON.stringify({ type: detectType, content: detectContent }),
+          }
+        )
+
+        if (res.ok) {
+          const data = await res.json()
+          useVerificationStore.getState().setAIDetectResult(data)
+          useAuthStore.getState().incrementChecks()
+        } else {
+          const err = await res.json().catch(() => ({}))
+          useVerificationStore.getState().addTerminalLine({
+            text: `Error: ${err.detail ?? 'Detection failed'}`,
+            type: 'error',
+          })
+          await new Promise(r => setTimeout(r, 500))
+          useVerificationStore.getState().setState('idle')
+        }
+      } catch (e) {
+        useVerificationStore.getState().addTerminalLine({
+          text: `Error: ${e instanceof Error ? e.message : 'Detection failed'}`,
+          type: 'error',
+        })
+        await new Promise(r => setTimeout(r, 500))
+        useVerificationStore.getState().setState('idle')
+      }
+      return
+    }
+
     let content = ''
-    
+
     if (activeTab === 'text') {
       content = textInput
     } else if (activeTab === 'url') {
       content = urlInput.trim()
       if (content && !content.startsWith('http://') && !content.startsWith('https://')) {
-        content = 'https://' + content
+        content = `https://${content}`
       }
     } else if (activeTab === 'image' && imageFile) {
       try {
         content = await fileToBase64(imageFile)
       } catch {
-        useUIStore.getState().addToast({
+        addToast({
           title: 'Image upload failed',
           description: 'Could not process the selected image.',
           type: 'error',
@@ -84,23 +177,23 @@ function IdleView() {
         return
       }
     }
-    
+
     if (!content) return
-    
+
     startVerification({ type: activeTab, content })
   }
-  
+
   const handleImageDrop = (e: React.DragEvent) => {
     e.preventDefault()
     setIsDragging(false)
-    
+
     const file = e.dataTransfer.files[0]
     if (file && file.type.startsWith('image/')) {
       setImageFile(file)
       setImagePreview(URL.createObjectURL(file))
     }
   }
-  
+
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file && file.type.startsWith('image/')) {
@@ -108,7 +201,7 @@ function IdleView() {
       setImagePreview(URL.createObjectURL(file))
     }
   }
-  
+
   const clearImage = () => {
     setImageFile(null)
     setImagePreview(null)
@@ -116,14 +209,19 @@ function IdleView() {
       fileInputRef.current.value = ''
     }
   }
-  
+
   const isInputValid = () => {
     if (activeTab === 'text') return textInput.trim().length > 0
     if (activeTab === 'url') return urlInput.trim().length > 0
     if (activeTab === 'image') return imageFile !== null
+    if (activeTab === 'ai-detect') {
+      if (aiDetectMode === 'text') return textInput.trim().length >= 50
+      if (aiDetectMode === 'image') return imageFile !== null
+      return false
+    }
     return false
   }
-  
+
   const recentHistory = history.slice(0, 3)
   const staggerContainer = {
     hidden: {},
@@ -133,7 +231,7 @@ function IdleView() {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   }
-  
+
   return (
     <motion.div
       initial="hidden"
@@ -141,7 +239,6 @@ function IdleView() {
       variants={staggerContainer}
       className="max-w-2xl mx-auto"
     >
-      {/* Header */}
       <motion.div
         variants={blockVariants}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -157,8 +254,7 @@ function IdleView() {
           {dailyChecksUsed} / {maxDailyChecks} daily verifications used
         </p>
       </motion.div>
-      
-      {/* Input type tabs */}
+
       <motion.div
         variants={blockVariants}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -187,15 +283,13 @@ function IdleView() {
           ))}
         </div>
       </motion.div>
-      
-      {/* Input area */}
+
       <motion.div
         variants={blockVariants}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="bg-card-v rounded-2xl border border-border-v p-6 mb-6"
       >
         <AnimatePresence mode="wait">
-          {/* Text input */}
           {activeTab === 'text' && (
             <motion.div
               key="text"
@@ -215,14 +309,11 @@ function IdleView() {
                 maxLength={5000}
               />
               <div className="flex justify-end mt-2">
-                <span className="text-xs text-muted-v">
-                  {textInput.length}/5000
-                </span>
+                <span className="text-xs text-muted-v">{textInput.length}/5000</span>
               </div>
             </motion.div>
           )}
-          
-          {/* URL input */}
+
           {activeTab === 'url' && (
             <motion.div
               key="url"
@@ -252,8 +343,7 @@ function IdleView() {
                   Fetch
                 </button>
               </div>
-              
-              {/* URL preview placeholder */}
+
               {urlInput && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -279,8 +369,7 @@ function IdleView() {
               )}
             </motion.div>
           )}
-          
-          {/* Image input */}
+
           {activeTab === 'image' && (
             <motion.div
               key="image"
@@ -297,8 +386,8 @@ function IdleView() {
                   className={cn(
                     'min-h-[180px] rounded-xl border-2 border-dashed cursor-pointer transition-colors',
                     'flex flex-col items-center justify-center gap-3',
-                    isDragging 
-                      ? 'border-cyan bg-cyan/5' 
+                    isDragging
+                      ? 'border-cyan bg-cyan/5'
                       : 'border-border-v hover:border-muted-v'
                   )}
                 >
@@ -338,10 +427,118 @@ function IdleView() {
               )}
             </motion.div>
           )}
+
+          {activeTab === 'ai-detect' && (
+            <motion.div
+              key="ai-detect"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setAIDetectMode('text')}
+                  className={cn(
+                    'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
+                    aiDetectMode === 'text'
+                      ? 'bg-cyan/20 text-cyan border border-cyan/30'
+                      : 'bg-surface text-muted-v border border-border-v hover:text-text'
+                  )}
+                >
+                  Detect AI Text
+                </button>
+                <button
+                  onClick={() => setAIDetectMode('image')}
+                  className={cn(
+                    'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
+                    aiDetectMode === 'image'
+                      ? 'bg-cyan/20 text-cyan border border-cyan/30'
+                      : 'bg-surface text-muted-v border border-border-v hover:text-text'
+                  )}
+                >
+                  Detect AI Image
+                </button>
+              </div>
+
+              <div className="mb-3 p-3 rounded-xl bg-cyan/5 border border-cyan/20 flex items-start gap-3">
+                <Bot className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-v">
+                  {aiDetectMode === 'text'
+                    ? 'Paste text (min 50 chars) to check if it was written by AI.'
+                    : 'Upload an image to check if it was generated by AI.'}
+                </p>
+              </div>
+
+              {aiDetectMode === 'text' ? (
+                <>
+                  <textarea
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    placeholder="Paste text to check if it was written by AI..."
+                    className={cn(
+                      'w-full min-h-[180px] p-4 rounded-xl bg-surface border border-border-v',
+                      'text-text placeholder:text-muted-v resize-none',
+                      'focus:outline-none focus:ring-2 focus:ring-cyan/30 focus:border-cyan/50'
+                    )}
+                    maxLength={5000}
+                  />
+                  <div className="flex justify-end mt-2">
+                    <span className="text-xs text-muted-v">{textInput.length}/5000</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {!imagePreview ? (
+                    <div
+                      onDrop={handleImageDrop}
+                      onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
+                      onDragLeave={() => setIsDragging(false)}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={cn(
+                        'min-h-[180px] rounded-xl border-2 border-dashed cursor-pointer transition-colors',
+                        'flex flex-col items-center justify-center gap-3',
+                        isDragging
+                          ? 'border-cyan bg-cyan/5'
+                          : 'border-border-v hover:border-cyan/50'
+                      )}
+                    >
+                      <div className="p-4 rounded-full bg-surface">
+                        <Upload className="w-8 h-8 text-muted-v" />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-text font-medium">Drop image here or click to upload</p>
+                        <p className="text-sm text-muted-v mt-1">PNG, JPG up to 10MB</p>
+                      </div>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageSelect}
+                        className="hidden"
+                      />
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full max-h-[300px] object-contain rounded-xl"
+                      />
+                      <button
+                        onClick={clearImage}
+                        className="absolute top-2 right-2 p-2 rounded-full bg-bg/80 hover:bg-bg transition-colors"
+                      >
+                        <X className="w-4 h-4 text-text" />
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </motion.div>
+          )}
         </AnimatePresence>
       </motion.div>
-      
-      {/* Analyze button */}
+
       <motion.div
         variants={blockVariants}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -360,11 +557,10 @@ function IdleView() {
           )}
         >
           <Sparkles className="w-5 h-5" />
-          Analyze & Verify
+          {activeTab === 'ai-detect' ? 'Analyze' : 'Analyze & Verify'}
         </motion.button>
       </motion.div>
-      
-      {/* Recent checks */}
+
       {recentHistory.length > 0 && (
         <motion.div
           variants={blockVariants}
@@ -387,6 +583,7 @@ function IdleView() {
                   {item.inputType === 'text' && <FileText className="w-5 h-5 text-muted-v" />}
                   {item.inputType === 'url' && <LinkIcon className="w-5 h-5 text-muted-v" />}
                   {item.inputType === 'image' && <Image className="w-5 h-5 text-muted-v" />}
+                  {item.inputType === 'ai-detect' && <Bot className="w-5 h-5 text-muted-v" />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-text truncate">
@@ -416,16 +613,8 @@ function IdleView() {
 }
 
 export default function DashboardPage() {
-  const { state } = useVerificationStore()
+  const { state, aiDetectResult } = useVerificationStore()
 
-  // AnimatePresence mode="wait" removed — it unmounts the current view
-  // COMPLETELY before mounting the new one, causing a blank screen gap.
-  // For image/URL input where startVerification() is called after an
-  // async operation, the exit animation was still running when the
-  // new state was set, resulting in a permanently blank screen.
-  //
-  // Fix: use a single motion.div keyed on state — React swaps the
-  // content instantly, and the enter animation plays on top of it.
   return (
     <motion.div
       key={state}
@@ -435,7 +624,9 @@ export default function DashboardPage() {
     >
       {state === 'idle' && <IdleView />}
       {state === 'processing' && <ProcessingView />}
-      {state === 'results' && <ResultsView />}
+      {state === 'results' && (
+        aiDetectResult ? <AIDetectResultView /> : <ResultsView />
+      )}
     </motion.div>
   )
 }

@@ -1,1 +1,1 @@
-from . import auth, history, subscription, verify
+from . import ai_detect, auth, history, subscription, verify

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
+  Bot,
   FileText,
   Link as LinkIcon,
   Image,
@@ -28,6 +29,7 @@ export function ResultsView() {
   if (!report) return null
 
   const inputIcon = {
+    'ai-detect': Bot,
     text: FileText,
     url: LinkIcon,
     image: Image,

@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { useAuthStore } from '@/lib/stores/auth-store'
 
 export type VerificationState = 'idle' | 'processing' | 'results'
-export type InputType = 'text' | 'url' | 'image'
+export type InputType = 'text' | 'url' | 'image' | 'ai-detect'
 export type Verdict = 'true' | 'false' | 'partial' | 'unverifiable'
 export type StepStatus = 'done' | 'active' | 'pending'
 
@@ -55,6 +55,17 @@ export interface Report {
   hasConflict: boolean
 }
 
+export interface AIDetectResult {
+  verdict: 'ai_generated' | 'likely_ai' | 'uncertain' | 'likely_human' | 'human_written' | 'real_photo'
+  confidence: number
+  reasoning: string
+  signals: {
+    ai_signals: string[]
+    human_signals: string[]
+  }
+  input_type: 'text' | 'image'
+}
+
 export interface HistoryItem {
   id: string
   title: string
@@ -71,15 +82,19 @@ interface VerificationStore {
   processingSteps: ProcessingStep[]
   terminalLines: TerminalLine[]
   report: Report | null
+  aiDetectResult: AIDetectResult | null
   history: HistoryItem[]
 
   startVerification: (input: { type: InputType; content: string }) => void
   updateStep: (stepId: string, updates: Partial<ProcessingStep>) => void
   addTerminalLine: (line: Omit<TerminalLine, 'timestamp'>) => void
   setReport: (report: Report) => void
+  setAIDetectResult: (result: AIDetectResult) => void
   reset: () => void
   setState: (state: VerificationState) => void
   addToHistory: (item: HistoryItem) => void
+  removeFromHistory: (id: string) => void
+  clearHistory: () => void
 }
 
 const initialSteps: ProcessingStep[] = [
@@ -96,6 +111,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
   processingSteps: initialSteps,
   terminalLines: [],
   report: null,
+  aiDetectResult: null,
   history: [],
 
   startVerification: (input) => {
@@ -108,6 +124,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
       })),
       terminalLines: [],
       report: null,
+      aiDetectResult: null,
     })
 
     void (async () => {
@@ -280,7 +297,9 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
     }))
   },
 
-  setReport: (report) => set({ report, state: 'results' }),
+  setReport: (report) => set({ report, aiDetectResult: null, state: 'results' }),
+
+  setAIDetectResult: (result) => set({ aiDetectResult: result, report: null, state: 'results' }),
 
   reset: () => set({
     state: 'idle',
@@ -288,6 +307,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
     processingSteps: initialSteps,
     terminalLines: [],
     report: null,
+    aiDetectResult: null,
   }),
 
   setState: (state) => set({ state }),
@@ -295,4 +315,10 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
   addToHistory: (item) => set((state) => ({
     history: [item, ...state.history].slice(0, 50),
   })),
+
+  removeFromHistory: (id) => set((state) => ({
+    history: state.history.filter((item) => item.id !== id),
+  })),
+
+  clearHistory: () => set({ history: [] }),
 }))

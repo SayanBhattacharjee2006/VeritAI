@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { FileText, Link as LinkIcon, Image, X } from 'lucide-react'
+import { Bot, FileText, Link as LinkIcon, Image, X } from 'lucide-react'
 import { useVerificationStore } from '@/lib/stores/verification-store'
 import { ProgressStepper } from '../ProgressStepper'
 import { TerminalLog } from '../TerminalLog'
@@ -11,11 +11,12 @@ export function ProcessingView() {
   const { currentInput, processingSteps, terminalLines, reset } = useVerificationStore()
   
   const inputIcon = {
+    'ai-detect': Bot,
     text: FileText,
     url: LinkIcon,
     image: Image,
   }
-  
+
   const Icon = currentInput ? inputIcon[currentInput.type] : FileText
   
   return (

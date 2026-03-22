@@ -92,6 +92,16 @@ async def run_pipeline(
                 await emit(log('Processing image with OCR...'))
                 try:
                     text = await extract_text_from_image(content)
+                    if text == '__NO_CLAIMS__':
+                        await emit(sse_event('error', {
+                            'message': (
+                                'No factual claims found in this image. '
+                                'This appears to be a photograph without text or '
+                                'verifiable claims. Try the AI Detect tab to check '
+                                'if this image was AI-generated.'
+                            )
+                        }))
+                        return
                     await emit(log(
                         '✓ Image processed successfully', 'success'
                     ))

@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 
-from app.api.routes import verify, auth, history, subscription
+from app.api.routes import verify, auth, history, subscription, ai_detect
 from app.core.config import settings
 from app.core.rate_limiter import limiter
 from app.services.mongodb_client import get_client, get_db
@@ -61,6 +61,7 @@ app.include_router(verify.router, prefix='/api', tags=['verify'])
 app.include_router(auth.router, prefix='/api', tags=['auth'])
 app.include_router(history.router, prefix='/api', tags=['history'])
 app.include_router(subscription.router, prefix='/api', tags=['subscription'])
+app.include_router(ai_detect.router, prefix='/api', tags=['ai-detect'])
 
 
 @app.get('/api/health')
