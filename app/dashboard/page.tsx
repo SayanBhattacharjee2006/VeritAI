@@ -417,44 +417,25 @@ function IdleView() {
 
 export default function DashboardPage() {
   const { state } = useVerificationStore()
-  
+
+  // AnimatePresence mode="wait" removed — it unmounts the current view
+  // COMPLETELY before mounting the new one, causing a blank screen gap.
+  // For image/URL input where startVerification() is called after an
+  // async operation, the exit animation was still running when the
+  // new state was set, resulting in a permanently blank screen.
+  //
+  // Fix: use a single motion.div keyed on state — React swaps the
+  // content instantly, and the enter animation plays on top of it.
   return (
-    <AnimatePresence mode="wait">
-      {state === 'idle' && (
-        <motion.div
-          key="idle"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <IdleView />
-        </motion.div>
-      )}
-      
-      {state === 'processing' && (
-        <motion.div
-          key="processing"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <ProcessingView />
-        </motion.div>
-      )}
-      
-      {state === 'results' && (
-        <motion.div
-          key="results"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -16 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <ResultsView />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <motion.div
+      key={state}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+    >
+      {state === 'idle' && <IdleView />}
+      {state === 'processing' && <ProcessingView />}
+      {state === 'results' && <ResultsView />}
+    </motion.div>
   )
 }

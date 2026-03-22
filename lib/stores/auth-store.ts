@@ -14,9 +14,7 @@ interface AuthState {
     avatar?: string
   } | null
   isAuthenticated: boolean
-  _hasHydrated: boolean
 
-  setHasHydrated: (val: boolean) => void
   setPlan: (plan: Plan) => void
   incrementChecks: () => void
   resetDailyChecks: () => void
@@ -42,9 +40,6 @@ export const useAuthStore = create<AuthState>()(
       maxDailyChecks: 5,
       user: null,
       isAuthenticated: false,
-      _hasHydrated: false,
-
-      setHasHydrated: (val) => set({ _hasHydrated: val }),
 
       setPlan: (plan) => set({
         plan,
@@ -71,9 +66,16 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'veritai-auth',
-      onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true)
-      },
+      // Only persist these fields.
+      // _hasHydrated must NEVER be persisted — if saved as false
+      // it breaks rehydration on every client-side navigation.
+      partialize: (state) => ({
+        plan: state.plan,
+        dailyChecksUsed: state.dailyChecksUsed,
+        maxDailyChecks: state.maxDailyChecks,
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+      }),
     }
   )
 )

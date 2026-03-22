@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuthStore } from '@/lib/stores/auth-store'
 import { AppLayout } from '@/components/veritai/app/AppLayout'
@@ -11,13 +11,33 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
-  const { isAuthenticated, _hasHydrated } = useAuthStore()
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
 
-  // Zustand persist reads localStorage asynchronously.
-  // Until _hasHydrated is true, isAuthenticated is unreliable.
-  // Show a spinner instead of null to prevent blank screen
-  // on both full refresh AND client-side navigation.
-  if (!_hasHydrated) {
+  // useAuthStore.persist.hasHydrated() is the CORRECT way to check
+  // if Zustand has finished reading from localStorage.
+  // It is synchronous and does NOT reset on client-side navigation
+  // because the store singleton stays alive between page navigations.
+  const [hydrated, setHydrated] = useState(
+    () => useAuthStore.persist.hasHydrated()
+  )
+
+  useEffect(() => {
+    if (!hydrated) {
+      // Subscribe to hydration completion event
+      const unsub = useAuthStore.persist.onFinishHydration(() => {
+        setHydrated(true)
+      })
+      // Check again synchronously in case it hydrated between
+      // render and this effect running
+      if (useAuthStore.persist.hasHydrated()) {
+        setHydrated(true)
+      }
+      return unsub
+    }
+  }, [hydrated])
+
+  // Still reading from localStorage — show spinner
+  if (!hydrated) {
     return (
       <div className="min-h-screen bg-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
