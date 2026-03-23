@@ -11,27 +11,46 @@ interface SpeechToTextButtonProps {
 
 type RecognitionState = 'idle' | 'listening' | 'processing'
 
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition
-    webkitSpeechRecognition: new () => SpeechRecognition
+interface ISpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  maxAlternatives: number
+  start(): void
+  stop(): void
+  onstart: (() => void) | null
+  onend: (() => void) | null
+  onerror: ((event: Event) => void) | null
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null
+}
+
+interface ISpeechRecognitionEvent extends Event {
+  results: {
+    [index: number]: {
+      [index: number]: { transcript: string }
+    }
   }
+}
+
+interface ISpeechRecognitionWindow extends Window {
+  SpeechRecognition: new () => ISpeechRecognition
+  webkitSpeechRecognition: new () => ISpeechRecognition
 }
 
 export function SpeechToTextButton({ onTranscript, disabled = false }: SpeechToTextButtonProps) {
   const [state, setState] = useState<RecognitionState>('idle')
   const [isSupported, setIsSupported] = useState(false)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<ISpeechRecognition | null>(null)
 
   useEffect(() => {
-    const SpeechRecognitionAPI =
-      window.SpeechRecognition || window.webkitSpeechRecognition
+    const w = window as unknown as ISpeechRecognitionWindow
+    const SpeechRecognitionAPI = w.SpeechRecognition || w.webkitSpeechRecognition
     setIsSupported(!!SpeechRecognitionAPI)
   }, [])
 
   const startListening = () => {
-    const SpeechRecognitionAPI =
-      window.SpeechRecognition || window.webkitSpeechRecognition
+    const w = window as unknown as ISpeechRecognitionWindow
+    const SpeechRecognitionAPI = w.SpeechRecognition || w.webkitSpeechRecognition
 
     if (!SpeechRecognitionAPI) return
 
@@ -45,7 +64,7 @@ export function SpeechToTextButton({ onTranscript, disabled = false }: SpeechToT
       setState('listening')
     }
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: ISpeechRecognitionEvent) => {
       setState('processing')
       const transcript = event.results[0]?.[0]?.transcript ?? ''
       if (transcript) {
