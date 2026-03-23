@@ -216,6 +216,8 @@ function HistoryContent() {
   const searchParams = useSearchParams()
   const queryFromUrl = searchParams.get('q') ?? ''
   const [searchQuery, setSearchQuery] = useState(queryFromUrl)
+  const [sortBy, setSortBy] = useState<'newest' | 'oldest' | 'accuracy_high' | 'accuracy_low'>('newest')
+  const [filterType, setFilterType] = useState<'all' | 'text' | 'url' | 'image' | 'ai-detect' | 'fact-check'>('all')
   const [selectedReportId, setSelectedReportId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [isDeletingAll, setIsDeletingAll] = useState(false)
@@ -262,6 +264,7 @@ function HistoryContent() {
           timestamp: item.timestamp,
           claimCount: item.claim_count,
           accuracy: item.accuracy,
+          analysisType: item.input_type === 'ai-detect' ? 'ai-detect' as const : 'fact-check' as const,
         }))
         setBackendHistory(mapped)
       }
@@ -278,10 +281,43 @@ function HistoryContent() {
 
   const mergedHistory = [
     ...backendHistory,
-    ...history.filter((local) => !backendHistory.some((backendItem) => backendItem.id === local.id)),
-  ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    ...history.filter(
+      (local) => !backendHistory.some((b) => b.id === local.id)
+    ),
+  ]
 
-  const filteredHistory = mergedHistory.filter((item) =>
+  const sortedFilteredHistory = mergedHistory
+    .filter((item) => {
+      if (filterType === 'all') return true
+      if (filterType === 'fact-check') {
+        return item.analysisType === 'fact-check' ||
+          (!item.analysisType && item.inputType !== 'ai-detect')
+      }
+      if (filterType === 'ai-detect') {
+        return item.analysisType === 'ai-detect' ||
+          item.inputType === 'ai-detect'
+      }
+      return item.inputType === filterType
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'newest':
+          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+        case 'oldest':
+          return new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+        case 'accuracy_high':
+          return (b.accuracy ?? -1) - (a.accuracy ?? -1)
+        case 'accuracy_low': {
+          const aAcc = a.accuracy < 0 ? 999 : a.accuracy
+          const bAcc = b.accuracy < 0 ? 999 : b.accuracy
+          return aAcc - bAcc
+        }
+        default:
+          return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+      }
+    })
+
+  const filteredHistory = sortedFilteredHistory.filter((item) =>
     item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     item.inputPreview.toLowerCase().includes(searchQuery.toLowerCase())
   )
@@ -405,17 +441,42 @@ function HistoryContent() {
                 focus:ring-2 focus:ring-primary-glow/30"
             />
           </div>
+          <div className="flex gap-2 flex-wrap">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="px-3 py-2 rounded-xl bg-surface border border-border-v text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary-glow/30 cursor-pointer"
+            >
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="accuracy_high">Highest Accuracy</option>
+              <option value="accuracy_low">Lowest Accuracy</option>
+            </select>
+
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value as typeof filterType)}
+              className="px-3 py-2 rounded-xl bg-surface border border-border-v text-sm text-text focus:outline-none focus:ring-2 focus:ring-primary-glow/30 cursor-pointer"
+            >
+              <option value="all">All Types</option>
+              <option value="fact-check">Fact Check</option>
+              <option value="ai-detect">AI Detect</option>
+              <option value="text">Text</option>
+              <option value="url">URL</option>
+              <option value="image">Image</option>
+            </select>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={handleExportAll}
-              disabled={mergedHistory.length === 0}
+              disabled={sortedFilteredHistory.length === 0}
               className="px-4 py-3 rounded-xl btn-ghost disabled:opacity-50
                 disabled:cursor-not-allowed flex items-center gap-2"
             >
               <Download className="w-4 h-4" />
               Export
             </button>
-            {mergedHistory.length > 0 && (
+            {sortedFilteredHistory.length > 0 && (
               <button
                 onClick={() => setShowDeleteAllConfirm(true)}
                 className="px-4 py-3 rounded-xl text-red-v hover:bg-red-v/10
@@ -452,7 +513,7 @@ function HistoryContent() {
                 <div>
                   <h3 className="font-semibold text-text">Clear All History?</h3>
                   <p className="text-sm text-muted-v">
-                    This will permanently delete all {mergedHistory.length} reports.
+                    This will permanently delete all {sortedFilteredHistory.length} reports.
                   </p>
                 </div>
               </div>
@@ -491,7 +552,7 @@ function HistoryContent() {
           className="text-center py-16 rounded-2xl bg-card-v border border-border-v"
         >
           <p className="text-muted-v">
-            {mergedHistory.length === 0
+            {sortedFilteredHistory.length === 0
               ? 'No verifications yet. Start by checking a claim.'
               : 'No results match your search'}
           </p>
@@ -541,15 +602,21 @@ function HistoryContent() {
                 <span className="text-xs uppercase tracking-wider text-muted-v">
                   {item.inputType}
                 </span>
-                <span className={cn(
-                  'px-2.5 py-1 rounded-full text-xs font-semibold',
-                  item.accuracy < 0 && 'bg-muted-v/20 text-muted-v',
-                  item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
-                  item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
-                  item.accuracy >= 0 && item.accuracy < 50 && 'bg-red-v/20 text-red-v',
-                )}>
-                  {item.accuracy < 0 ? 'N/A' : `${item.accuracy}% accuracy`}
-                </span>
+                {item.analysisType === 'ai-detect' || item.inputType === 'ai-detect' ? (
+                  <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-cyan/20 text-cyan">
+                    AI Detect
+                  </span>
+                ) : (
+                  <span className={cn(
+                    'px-2.5 py-1 rounded-full text-xs font-semibold',
+                    item.accuracy < 0 && 'bg-muted-v/20 text-muted-v',
+                    item.accuracy >= 80 && 'bg-green-v/20 text-green-v',
+                    item.accuracy >= 50 && item.accuracy < 80 && 'bg-amber/20 text-amber',
+                    item.accuracy >= 0 && item.accuracy < 50 && 'bg-red-v/20 text-red-v',
+                  )}>
+                    {item.accuracy < 0 ? 'N/A' : `${item.accuracy}% accuracy`}
+                  </span>
+                )}
               </div>
 
               <div className="mt-3 flex items-center gap-1 text-xs text-muted-v

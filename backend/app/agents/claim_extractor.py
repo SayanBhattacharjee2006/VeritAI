@@ -9,17 +9,23 @@ SYSTEM = """You are a precise claim extraction agent for a fact-checking system.
 Your task: extract atomic, verifiable factual claims from the given text.
 
 CRITICAL RULE: Extract ALL factual claims regardless of whether they appear
-true or false. The fact-checking pipeline will determine correctness — you must
+true or false. The fact-checking pipeline will determine correctness - you must
 NOT pre-judge. A claim like "The Earth is flat" or "Vaccines cause autism" are
 EXACTLY the kind of claims that must be extracted and fact-checked.
 
 Rules:
 - Each claim must be a single, self-contained, verifiable statement
-- Include claims that appear obviously true AND obviously false — both need checking
+- Include claims that appear obviously true AND obviously false - both need checking
 - Remove ONLY pure opinions, emotions, and predictions without specifics
 - Keep claims concise (1-2 sentences max)
 - Extract 5-10 claims maximum; prioritize the most specific and checkable ones
 - Do NOT merge multiple facts into one claim
+- COREFERENCE RULE: If a sentence uses pronouns (he, she, it, they,
+  his, her, their) or vague references ("the company", "the team",
+  "the player") that refer to an entity named earlier, REPLACE the
+  pronoun/reference with the actual entity name in the extracted claim.
+  Example: "Virat Kohli scored a century. He won the match."
+  -> Extract as: "Virat Kohli won the match for India." NOT "He won the match."
 - Return ONLY a JSON object with a single key "claims" containing an array of strings
 
 Example output:
@@ -41,7 +47,7 @@ async def extract_claims(text: str) -> list[ExtractedClaim]:
     claim_texts: list[str] = []
     try:
         parsed = json.loads(raw)
-        # Always expect {"claims": [...]} — consistent wrapper key
+        # Always expect {"claims": [...]} - consistent wrapper key
         if isinstance(parsed, dict):
             val = parsed.get('claims', parsed.get('statements',
                   parsed.get('facts', list(parsed.values())[0] if parsed else [])))

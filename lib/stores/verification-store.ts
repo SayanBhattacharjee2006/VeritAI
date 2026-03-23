@@ -74,6 +74,7 @@ export interface HistoryItem {
   timestamp: string
   claimCount: number
   accuracy: number
+  analysisType: 'fact-check' | 'ai-detect'
 }
 
 interface VerificationStore {
@@ -241,6 +242,7 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
                   timestamp: report.timestamp,
                   claimCount: report.claims.length,
                   accuracy: report.score,
+                  analysisType: 'fact-check',
                 })
 
                 // Increment daily check counter
@@ -299,7 +301,29 @@ export const useVerificationStore = create<VerificationStore>((set, get) => ({
 
   setReport: (report) => set({ report, aiDetectResult: null, state: 'results' }),
 
-  setAIDetectResult: (result) => set({ aiDetectResult: result, report: null, state: 'results' }),
+  setAIDetectResult: (result) => {
+    const id = `AI-${Date.now().toString(36).toUpperCase()}`
+    const item: HistoryItem = {
+      id,
+      title: result.input_type === 'image'
+        ? 'AI Image Detection'
+        : 'AI Text Detection',
+      inputType: 'ai-detect',
+      inputPreview: result.input_type === 'image'
+        ? 'Image analyzed for AI generation'
+        : `Analyzed for AI content - verdict: ${result.verdict}`,
+      timestamp: new Date().toISOString(),
+      claimCount: 0,
+      accuracy: -1,
+      analysisType: 'ai-detect',
+    }
+    set((state) => ({
+      aiDetectResult: result,
+      report: null,
+      state: 'results',
+      history: [item, ...state.history].slice(0, 50),
+    }))
+  },
 
   reset: () => set({
     state: 'idle',

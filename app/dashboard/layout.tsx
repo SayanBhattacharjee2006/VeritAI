@@ -13,28 +13,25 @@ export default function DashboardLayout({
   const router = useRouter()
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
 
-  // useAuthStore.persist.hasHydrated() is the CORRECT way to check
-  // if Zustand has finished reading from localStorage.
-  // It is synchronous and does NOT reset on client-side navigation
-  // because the store singleton stays alive between page navigations.
-  const [hydrated, setHydrated] = useState(
-    () => useAuthStore.persist.hasHydrated()
-  )
+  // Always start as false — useState initializer runs on the server
+  // during Next.js build/SSR, where localStorage doesn't exist and
+  // useAuthStore.persist.hasHydrated() crashes with "Cannot read
+  // properties of undefined". The useEffect below handles setting
+  // hydrated=true on the client after localStorage is read.
+  const [hydrated, setHydrated] = useState(false)
 
   useEffect(() => {
-    if (!hydrated) {
-      // Subscribe to hydration completion event
-      const unsub = useAuthStore.persist.onFinishHydration(() => {
-        setHydrated(true)
-      })
-      // Check again synchronously in case it hydrated between
-      // render and this effect running
-      if (useAuthStore.persist.hasHydrated()) {
-        setHydrated(true)
-      }
-      return unsub
+    // Subscribe to hydration completion event
+    const unsub = useAuthStore.persist.onFinishHydration(() => {
+      setHydrated(true)
+    })
+    // Check synchronously in case it already hydrated before
+    // this effect ran
+    if (useAuthStore.persist.hasHydrated()) {
+      setHydrated(true)
     }
-  }, [hydrated])
+    return unsub
+  }, [])
 
   // Redirect to login if user is not authenticated (Temporarily Disabled for UI Testing)
   // useEffect(() => {

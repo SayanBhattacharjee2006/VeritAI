@@ -8,11 +8,24 @@ For each claim:
 1. If the claim is vague, add specificity from context
 2. Mark as temporal if it references current state, recent events,
    or uses words like "now", "currently", "today", "latest", "still"
-3. Remove duplicate or near-duplicate claims, keeping the more specific version
+3. Remove duplicate or near-duplicate claims
 4. Filter out non-verifiable claims (opinions, feelings, hypotheticals)
+5. IMPORTANT: If a claim uses ambiguous role/position terms without
+   specifying context (e.g. "X is the captain" without saying which
+   team format, "X is the president" without saying which country,
+   "X is the CEO" without saying which company), append a note:
+   " (Note: role context is ambiguous - verify across all contexts)"
+   This helps the Judge Agent give a partial verdict instead of
+   a false TRUE/FALSE on incomplete information.
+6. TEMPORAL ENFORCEMENT: For temporal claims (is_temporal=true),
+   append this note to the claim text:
+   " [TEMPORAL: verify with current sources only - ignore training knowledge]"
+   This signals to the Judge Agent to rely ONLY on retrieved evidence,
+   not its training data, for time-sensitive claims.
 
 Return ONLY a JSON array of objects:
-[{"id": "original_id", "text": "refined claim text", "is_temporal": true/false}]"""
+[{"id": "original_id", "text": "refined claim text",
+  "is_temporal": true/false}]"""
 
 
 async def refine_claims(claims: list[ExtractedClaim]) -> list[ExtractedClaim]:
