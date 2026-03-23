@@ -21,6 +21,7 @@ import { useUIStore } from '@/lib/stores/ui-store'
 import { ProcessingView } from '@/components/veritai/app/ProcessingView'
 import { ResultsView } from '@/components/veritai/app/ResultsView'
 import { AIDetectResultView } from '@/components/veritai/app/AIDetectResultView'
+import { SpeechToTextButton } from '@/components/veritai/app/SpeechToTextButton'
 
 const inputTabs: { id: InputType; label: string; icon: LucideIcon }[] = [
   { id: 'text', label: 'Text', icon: FileText },
@@ -308,7 +309,12 @@ function IdleView() {
                 )}
                 maxLength={5000}
               />
-              <div className="flex justify-end mt-2">
+              <div className="flex items-center justify-between mt-2">
+                <SpeechToTextButton
+                  onTranscript={(transcript) =>
+                    setTextInput((prev) => (prev ? prev + ' ' + transcript : transcript))
+                  }
+                />
                 <span className="text-xs text-muted-v">{textInput.length}/5000</span>
               </div>
             </motion.div>
@@ -482,7 +488,12 @@ function IdleView() {
                     )}
                     maxLength={5000}
                   />
-                  <div className="flex justify-end mt-2">
+                  <div className="flex items-center justify-between mt-2">
+                    <SpeechToTextButton
+                      onTranscript={(transcript) =>
+                        setTextInput((prev) => (prev ? prev + ' ' + transcript : transcript))
+                      }
+                    />
                     <span className="text-xs text-muted-v">{textInput.length}/5000</span>
                   </div>
                 </>
