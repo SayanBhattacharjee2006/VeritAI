@@ -47,13 +47,13 @@ function FAQItem({ question, answer, isOpen, onToggle, index }: FAQItemProps) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
-      className="border-b border-border-v"
+      className="border-b border-[#1E2340]"
     >
       <button
         onClick={onToggle}
         className="flex items-center justify-between w-full py-6 text-left cursor-pointer group"
       >
-        <span className="text-lg font-medium text-text group-hover:text-orange transition-colors pr-8">
+        <span className="text-lg font-medium text-white group-hover:text-violet-400 transition-colors pr-8">
           {question}
         </span>
         <motion.div
@@ -74,7 +74,7 @@ function FAQItem({ question, answer, isOpen, onToggle, index }: FAQItemProps) {
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-muted-v leading-relaxed">
+            <p className="pb-6 text-neutral-400 leading-relaxed">
               {answer}
             </p>
           </motion.div>
@@ -92,13 +92,13 @@ export function FAQSection() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <ScrollReveal className="text-center mb-12">
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-text">
+          <h2 className="font-display text-5xl lg:text-6xl font-bold text-violet-400">
             Frequently Asked Questions
           </h2>
         </ScrollReveal>
         
         {/* FAQ items */}
-        <ScrollReveal delay={0.2} className="divide-y divide-border-v border-t border-border-v">
+        <ScrollReveal delay={0.2} className="divide-y divide-[#1E2340] border-t border-[#1E2340]">
           {faqs.map((faq, index) => (
             <FAQItem
               key={index}

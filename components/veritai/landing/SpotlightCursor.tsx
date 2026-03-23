@@ -36,7 +36,7 @@ export function SpotlightCursor() {
       className="pointer-events-none fixed z-[9999] -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full opacity-0 transition-opacity duration-300"
       style={{
         background:
-          'radial-gradient(circle, rgba(255,107,43,0.08) 0%, rgba(245,158,11,0.04) 30%, transparent 70%)',
+          'radial-gradient(circle, rgba(139,92,246,0.08) 0%, rgba(124,58,237,0.04) 30%, transparent 70%)',
       }}
       aria-hidden="true"
     />

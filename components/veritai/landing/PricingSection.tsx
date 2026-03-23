@@ -66,22 +66,22 @@ function PricingCard({ plan }: { plan: (typeof plans)[number] }) {
       className={cn(
         'relative rounded-2xl border p-8',
         plan.featured
-          ? 'bg-card-v border-orange/30 scale-105 shadow-xl shadow-orange/10 shadow-[0_0_60px_rgba(255,107,43,0.12)]'
-          : 'bg-card-v border-border-v'
+          ? 'bg-[#0D1021] border-violet-500/40 scale-105 shadow-[0_0_60px_rgba(139,92,246,0.15)]'
+          : 'bg-[#0D1021] border-[#1E2340]'
       )}
     >
       {plan.badge && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="px-4 py-1 rounded-full bg-gradient-to-r from-orange to-amber text-xs font-semibold text-bg">
+          <span className="px-4 py-1 rounded-full bg-violet-600 text-white text-xs font-semibold border border-violet-500/40">
             {plan.badge}
           </span>
         </div>
       )}
 
       <div className="mb-6">
-        <span className="font-mono text-xs text-muted-v uppercase tracking-wider">{plan.name}</span>
+        <span className="font-mono text-xs text-violet-400 uppercase tracking-wider">{plan.name}</span>
         <div className="flex items-baseline gap-1 mt-2">
-          <span className="font-display text-5xl font-black text-text">{plan.price}</span>
+          <span className="font-display text-5xl font-black text-white">{plan.price}</span>
           <span className="text-muted-v">{plan.period}</span>
         </div>
         <p className="text-sm text-muted-v mt-2">{plan.description}</p>
@@ -119,14 +119,14 @@ function PricingCard({ plan }: { plan: (typeof plans)[number] }) {
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 bg-surface relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange/4 rounded-full blur-[150px] pointer-events-none" aria-hidden="true" />
+    <section id="pricing" className="py-24 bg-transparent relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-violet-950/20 rounded-full blur-[150px] pointer-events-none" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-green-v/10 text-green-v text-xs font-mono uppercase tracking-wider mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-[#1C1040] text-violet-400 text-xs font-mono uppercase tracking-wider border border-violet-900/40 mb-4">
             Pricing
           </span>
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-text mb-4">Start free. Scale when ready.</h2>
+          <h2 className="font-display text-5xl lg:text-6xl font-bold text-violet-400 mb-4">Start free. Scale when ready.</h2>
           <p className="text-lg text-muted-v max-w-2xl mx-auto">
             Choose the plan that fits your verification needs. Upgrade or downgrade anytime.
           </p>

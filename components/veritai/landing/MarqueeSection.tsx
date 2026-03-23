@@ -30,10 +30,10 @@ function MarqueeRow({ reverse = false }: MarqueeRowProps) {
         {[...features, ...features].map((feature, index) => (
           <div
             key={index}
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-surface border border-border-v"
+            className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-[#0D1021] border border-[#1E2340]"
           >
-            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-orange to-amber" />
-            <span className="text-sm font-medium text-text">{feature}</span>
+            <span className="w-2 h-2 rounded-full bg-gradient-to-r from-violet-500 to-purple-400" />
+            <span className="text-sm font-medium text-white">{feature}</span>
           </div>
         ))}
       </div>

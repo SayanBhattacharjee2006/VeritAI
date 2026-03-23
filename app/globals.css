@@ -4,49 +4,47 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* VeritAI Design System */
-  --bg: #0A0F1E;
-  --surface: #111827;
-  --card: #1A1F2F;
-  --card-high: #25293A;
-  --border: #2A2F42;
-  --primary: #ADC6FF;
-  --primary-glow: #4D8EFF;
-  --cyan: #4CD7F6;
-  --orange: #FF6B2B;
-  --amber: #F59E0B;
-  --green: #4AE176;
-  --red: #FF6B6B;
-  --success: #4AE176;
-  --text: #DEE1F7;
-  --muted: #8892A4;
-  
-  /* Mapped to Tailwind conventions */
-  --background: #0A0F1E;
-  --foreground: #DEE1F7;
-  --card-foreground: #DEE1F7;
-  --popover: #1A1F2F;
-  --popover-foreground: #DEE1F7;
-  --primary-foreground: #0A0F1E;
-  --secondary: #25293A;
-  --secondary-foreground: #DEE1F7;
-  --muted-foreground: #8892A4;
-  --accent: #25293A;
-  --accent-foreground: #DEE1F7;
-  --destructive: #FF6B6B;
-  --destructive-foreground: #0A0F1E;
-  --input: #2A2F42;
-  --ring: #4D8EFF;
-  --radius: 0.625rem;
-  
-  --sidebar: #111827;
-  --sidebar-foreground: #DEE1F7;
-  --sidebar-primary: #ADC6FF;
-  --sidebar-primary-foreground: #0A0F1E;
-  --sidebar-accent: #25293A;
-  --sidebar-accent-foreground: #DEE1F7;
-  --sidebar-border: #2A2F42;
-  --sidebar-ring: #4D8EFF;
+  --bg: #06090F;
+  --surface: #0C1018;
+  --card: #10151F;
+  --card-high: #161C28;
+  --border: #1E2433;
+  --primary: #a78bfa;          /* violet-400 */
+  --primary-glow: #7c3aed;     /* violet-600 */
+  --cyan: #67e8f9;             /* cyan-300 */
+  --orange: #fb923c;           /* orange-400 */
+  --amber: #fbbf24;            /* amber-400 */
+  --green: #4ade80;            /* green-400 */
+  --red: #f87171;              /* red-400 */
+  --success: #4ade80;
+  --text: #f5f5f5;             /* near white */
+  --muted: #737373;            /* neutral-500 */
+
+  --background: #06090F;
+  --foreground: #f5f5f5;
+  --card-foreground: #f5f5f5;
+  --popover: #141414;
+  --popover-foreground: #f5f5f5;
+  --primary-foreground: #ffffff;
+  --secondary: #1c1c1c;
+  --secondary-foreground: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: #1c1c1c;
+  --accent-foreground: #f5f5f5;
+  --destructive: #f87171;
+  --destructive-foreground: #080808;
+  --input: #222222;
+  --ring: #7c3aed;
+  --radius: 0.5rem;
+
+  --sidebar: #0C1018;
+  --sidebar-foreground: #f5f5f5;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #080808;
+  --sidebar-accent: #1c1c1c;
+  --sidebar-accent-foreground: #f5f5f5;
+  --sidebar-border: #222222;
+  --sidebar-ring: #7c3aed;
 }
 
 /* Light mode overrides */
@@ -63,7 +61,6 @@
   --amber: #B45309;
   --green: #15803D;
   --red: #DC2626;
-  --success: #15803D;
   --text: #0F172A;
   --muted: #475569;
 
@@ -91,9 +88,9 @@
 }
 
 @theme inline {
-  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-  --font-display: 'Syne', 'Syne Fallback', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
+  --font-sans: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-display: 'Geist', 'Inter', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
   
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -109,7 +106,6 @@
   --color-red-v: var(--red);
   --color-text: var(--text);
   --color-muted-v: var(--muted);
-  --color-success: var(--green);
   
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -158,8 +154,8 @@
   body {
     @apply bg-bg text-text antialiased;
     background-image: 
-      radial-gradient(ellipse at top right, rgba(77, 142, 255, 0.06), transparent 50%),
-      radial-gradient(ellipse at bottom left, rgba(76, 215, 246, 0.04), transparent 50%);
+      radial-gradient(ellipse at top right, rgba(255, 107, 43, 0.06), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(245, 158, 11, 0.04), transparent 50%);
     min-height: 100vh;
   }
   
@@ -169,8 +165,9 @@
     position: fixed;
     inset: 0;
     pointer-events: none;
-    opacity: 0.03;
-    background-image: url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='2' cy='2' r='1' fill='%23DEE1F7'/%3E%3C/svg%3E");
+    opacity: 0.07;
+    background-image: radial-gradient(circle, #333333 1px, transparent 1px);
+    background-size: 28px 28px;
     z-index: 0;
   }
 }
@@ -185,30 +182,18 @@
 }
 
 .orb-1 {
-  top: 10%;
-  left: 5%;
-  width: 400px;
-  height: 400px;
-  background: rgba(77, 142, 255, 0.07);
-  animation: float-orb-1 25s ease-in-out infinite;
+  opacity: 0;
+  display: none;
 }
 
 .orb-2 {
-  top: 40%;
-  right: 5%;
-  width: 350px;
-  height: 350px;
-  background: rgba(76, 215, 246, 0.05);
-  animation: float-orb-2 28s ease-in-out infinite;
+  opacity: 0;
+  display: none;
 }
 
 .orb-3 {
-  bottom: 10%;
-  left: 40%;
-  width: 300px;
-  height: 300px;
-  background: rgba(255, 107, 43, 0.04);
-  animation: float-orb-3 32s ease-in-out infinite;
+  opacity: 0;
+  display: none;
 }
 
 @keyframes float-orb-1 {
@@ -231,14 +216,14 @@
 
 /* Gradient text utilities */
 .gradient-text {
-  background: linear-gradient(135deg, #FF6B2B, #F59E0B);
+  background: linear-gradient(135deg, #a78bfa, #67e8f9);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .gradient-text-blue {
-  background: linear-gradient(135deg, #ADC6FF, #4CD7F6);
+  background: linear-gradient(135deg, #a78bfa, #c4b5fd);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -246,9 +231,9 @@
 
 /* Frosted glass effect */
 .glass {
-  background: rgba(26, 31, 47, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
 }
 
 .glass-light {
@@ -284,26 +269,29 @@
 
 /* Button base styles */
 .btn-primary {
-  background: linear-gradient(135deg, #FF6B2B, #F59E0B);
-  color: #0A0F1E;
+  background: #ffffff;
+  color: #080808;
   font-weight: 600;
+  border: 1px solid rgba(255,255,255,0.15);
   transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-  box-shadow: 0 0 20px rgba(255, 107, 43, 0.4);
+  background: #f0f0f0;
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.15);
 }
 
 .btn-ghost {
   background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text);
+  border: 1px solid #222222;
+  color: #f5f5f5;
   transition: all 0.2s ease;
 }
 
 .btn-ghost:hover {
-  border-color: var(--orange);
-  color: var(--orange);
+  border-color: rgba(255,255,255,0.4);
+  color: #ffffff;
+  background: rgba(255,255,255,0.04);
 }
 
 /* Terminal styling */

@@ -18,7 +18,7 @@ const tierConfig = {
     label: 'Tier 1',
   },
   2: {
-    color: 'bg-primary-v',
+    color: 'bg-violet-500',
     label: 'Tier 2',
   },
   3: {
@@ -36,8 +36,8 @@ export function SourceChip({ domain, url, tier, title, className }: SourceChipPr
       whileHover={{ y: -2, backgroundColor: 'var(--card-high)' }}
       className={cn(
         'inline-flex items-center gap-2 px-3 py-1.5 rounded-lg',
-        'bg-card-v border border-border-v',
-        'text-sm text-text hover:text-cyan',
+        'bg-[#0D1021] border border-[#1E2340]',
+        'text-sm text-white hover:text-cyan',
         'transition-colors cursor-pointer group',
         className
       )}

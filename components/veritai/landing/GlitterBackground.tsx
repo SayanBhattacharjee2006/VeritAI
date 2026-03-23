@@ -2,19 +2,6 @@
 
 import { useEffect, useRef } from 'react'
 
-interface Particle {
-  x: number
-  y: number
-  size: number
-  opacity: number
-  speedX: number
-  speedY: number
-  fadeSpeed: number
-  life: number
-  maxLife: number
-  color: string
-}
-
 export function GlitterBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -31,65 +18,33 @@ export function GlitterBackground() {
     resize()
     window.addEventListener('resize', resize, { passive: true })
 
-    const colors = [
-      'rgba(255,107,43,',
-      'rgba(245,158,11,',
-      'rgba(76,215,246,',
-      'rgba(173,198,255,',
-    ]
-
-    const particles: Particle[] = []
-    const MAX_PARTICLES = 80
-
-    const spawn = (): Particle => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 2 + 0.5,
-      opacity: 0,
-      speedX: (Math.random() - 0.5) * 0.3,
-      speedY: (Math.random() - 0.5) * 0.3 - 0.1,
-      fadeSpeed: Math.random() * 0.008 + 0.004,
-      life: 0,
-      maxLife: Math.random() * 120 + 80,
-      color: colors[Math.floor(Math.random() * colors.length)],
-    })
-
-    for (let i = 0; i < MAX_PARTICLES; i++) {
-      const p = spawn()
-      p.life = Math.random() * p.maxLife
-      particles.push(p)
-    }
-
+    let t = 0
     let raf: number
 
     const draw = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-      for (let i = particles.length - 1; i >= 0; i--) {
-        const p = particles[i]
-        p.life++
-        p.x += p.speedX
-        p.y += p.speedY
+      // Subtle radial veil — deep purple glow at top center (Dark Veil effect)
+      const grad1 = ctx.createRadialGradient(
+        canvas.width / 2, 0, 0,
+        canvas.width / 2, 0, canvas.height * 0.75
+      )
+      grad1.addColorStop(0, 'rgba(124, 58, 237, 0.09)')
+      grad1.addColorStop(0.5, 'rgba(109, 40, 217, 0.04)')
+      grad1.addColorStop(1, 'rgba(0, 0, 0, 0)')
+      ctx.fillStyle = grad1
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        const half = p.maxLife / 2
-        p.opacity = p.life < half
-          ? (p.life / half) * 0.7
-          : ((p.maxLife - p.life) / half) * 0.7
+      // Slow drifting secondary glow (bottom left, cyan tint)
+      const cx2 = canvas.width * 0.15 + Math.sin(t * 0.0004) * 60
+      const cy2 = canvas.height * 0.7 + Math.cos(t * 0.0003) * 40
+      const grad2 = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, 350)
+      grad2.addColorStop(0, 'rgba(103, 232, 249, 0.05)')
+      grad2.addColorStop(1, 'rgba(0, 0, 0, 0)')
+      ctx.fillStyle = grad2
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-        if (p.life >= p.maxLife) {
-          particles[i] = spawn()
-          continue
-        }
-
-        ctx.save()
-        ctx.globalAlpha = p.opacity
-        ctx.fillStyle = p.color + p.opacity + ')'
-        ctx.translate(p.x, p.y)
-        ctx.fillRect(-p.size, -p.size / 4, p.size * 2, p.size / 2)
-        ctx.fillRect(-p.size / 4, -p.size, p.size / 2, p.size * 2)
-        ctx.restore()
-      }
-
+      t++
       raf = requestAnimationFrame(draw)
     }
 

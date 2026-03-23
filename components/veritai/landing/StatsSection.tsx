@@ -37,20 +37,20 @@ function StatCard({ value, numericValue, label, suffix = '', index }: StatCardPr
       className="relative group"
     >
       {/* Hover glow */}
-      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-orange/0 to-amber/0 group-hover:from-orange/20 group-hover:to-amber/20 transition-all duration-300 blur-xl" />
+      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-violet-500/0 to-cyan-400/0 group-hover:from-violet-500/10 group-hover:to-cyan-400/10 transition-all duration-300 blur-xl" />
       
-      <div className="relative p-8 rounded-2xl bg-card-v border border-border-v border-b-2 border-b-orange/40 group-hover:border-orange/30 transition-colors overflow-hidden">
-        <span className="flex items-baseline gap-0.5 overflow-hidden font-display text-5xl lg:text-6xl font-black gradient-text mb-3 leading-none truncate">
+      <div className="relative p-8 rounded-2xl bg-[#0e0e0e] border border-[#1e1e1e] border-b-2 border-b-violet-500/40 group-hover:border-violet-500/30 transition-colors overflow-hidden">
+        <span className="flex items-baseline gap-0.5 overflow-hidden font-display text-5xl lg:text-6xl font-bold gradient-text mb-3 leading-none truncate text-white">
           {numericValue ? (
             <>
               <motion.span>{displayValue}</motion.span>
-              <span className="text-4xl lg:text-5xl font-black gradient-text">{suffix}</span>
+              <span className="text-4xl lg:text-5xl font-bold gradient-text text-white">{suffix}</span>
             </>
           ) : (
             value
           )}
         </span>
-        <span className="text-muted-v font-medium">{label}</span>
+        <span className="text-neutral-500 font-medium">{label}</span>
       </div>
     </motion.div>
   )
@@ -65,8 +65,8 @@ const stats = [
 
 export function StatsSection() {
   return (
-    <section className="py-24 bg-surface relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-orange/3 via-transparent to-cyan/3 pointer-events-none" aria-hidden="true" />
+    <section className="py-24 relative overflow-hidden bg-transparent">
+      <div className="absolute inset-0 bg-transparent pointer-events-none" aria-hidden="true" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
