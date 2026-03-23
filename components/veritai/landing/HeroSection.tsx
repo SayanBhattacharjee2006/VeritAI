@@ -66,17 +66,17 @@ function HeroCard() {
       transition={{ duration: 0.9, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="relative"
     >
-      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-orange/20 via-transparent to-amber/20 blur-xl" />
+      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-violet-500/15 via-transparent to-violet-900/10 blur-xl" />
 
       <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}>
         <div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{ transition: 'transform 0.1s ease' }}
-          className="relative bg-card-v/40 backdrop-blur-2xl rounded-2xl border border-border-v p-6 w-full max-w-sm"
+          className="relative rounded-2xl border border-[#1E2340] bg-[#0D1021] p-6 w-full max-w-sm"
         >
           <div className="flex items-center justify-between mb-6">
-            <span className="font-mono text-xs text-cyan">ANALYSIS_ID: VX-9920</span>
+            <span className="font-mono text-xs text-violet-400">ANALYSIS_ID: VX-9920</span>
             <span className="text-xs text-muted-v">Just now</span>
           </div>
 
@@ -127,8 +127,10 @@ export function HeroSection() {
         className="absolute inset-0 pointer-events-none"
         aria-hidden="true"
       >
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] rounded-full bg-orange/5 blur-[120px]" />
-        <div className="absolute top-1/3 left-1/4 w-[400px] h-[400px] rounded-full bg-cyan/4 blur-[100px]" />
+        <div className="absolute top-0 left-0 right-0 h-[70vh] pointer-events-none" aria-hidden="true">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-violet-950/30 blur-[130px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[400px] h-[250px] rounded-full bg-violet-600/[0.07] blur-[80px]" />
+        </div>
       </div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
@@ -137,31 +139,31 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-orange/30 bg-orange/8 backdrop-blur-sm mb-8"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-violet-800/40 bg-[#1C1040] backdrop-blur-sm mb-8"
             >
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-v opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-v" />
               </span>
-              <span className="text-sm text-muted-v">Evidence Engine v1.0 - Live</span>
+              <span className="text-neutral-400 text-sm">Evidence Engine v1.0 - Live</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
-              className="font-display text-5xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6"
+              className="font-display text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 leading-[1.08]"
             >
-              <span className="text-text">Stop Believing.</span>
+              <span className="text-white">Stop Believing.</span>
               <br />
-              <span className="bg-gradient-to-r from-orange via-amber to-orange/70 bg-clip-text text-transparent">Start Verifying.</span>
+              <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-cyan-300 bg-clip-text text-transparent">Start Verifying.</span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-muted-v/90 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8"
+              className="text-neutral-500 text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8"
             >
               VeritAI extracts every claim from articles, URLs, and images - then verifies each against real-time web evidence.
             </motion.p>
@@ -215,10 +217,10 @@ export function HeroSection() {
               <div className="flex -space-x-2">
                 {['A', 'M', 'R', 'S'].map((initial, i) => {
                   const colors = [
-                    'from-orange to-amber',
-                    'from-cyan to-primary-v',
-                    'from-green-v to-cyan',
-                    'from-primary-v to-orange',
+                    'from-violet-500 to-purple-400',
+                    'from-cyan-400 to-violet-400',
+                    'from-purple-400 to-pink-400',
+                    'from-violet-400 to-cyan-300',
                   ]
                   return (
                     <div

@@ -65,9 +65,9 @@ const plans = [
 ]
 
 const planColors = {
-  free: 'from-cyan/10 to-primary-v/10',
-  pro: 'from-orange/10 to-amber/10',
-  premium: 'from-amber/10 to-green-v/10',
+  free: 'from-violet-500/5 to-cyan-400/5',
+  pro: 'from-violet-500/10 to-purple-500/10',
+  premium: 'from-cyan-400/5 to-violet-500/5',
 } as const
 
 export default function UpgradePage() {
@@ -148,52 +148,54 @@ export default function UpgradePage() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-text mb-4">
+          <h1 className="font-display text-5xl lg:text-6xl font-bold text-violet-400 mb-4">
             Simple, Transparent Pricing
           </h1>
-          <p className="text-lg text-muted-v">
+          <p className="text-lg text-neutral-400">
             Choose the perfect plan for your fact-checking needs
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div className="grid md:grid-cols-3 gap-8 mb-12 pt-4">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className={`relative rounded-2xl overflow-hidden transition-all ${
-                plan.highlighted ? 'md:scale-105 md:shadow-2xl' : ''
+              className="h-full"
+            >
+            <motion.div
+              whileHover={{ y: -8, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              className={`relative rounded-2xl h-full ${
+                plan.highlighted ? 'md:scale-105 shadow-[0_0_60px_rgba(139,92,246,0.15)]' : ''
               }`}
             >
+              {plan.highlighted && (
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-20">
+                  <span className="px-4 py-1 rounded-full bg-violet-600 text-white text-xs font-semibold border border-violet-500/40 whitespace-nowrap">
+                    Most Popular
+                  </span>
+                </div>
+              )}
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${planColors[plan.id]} opacity-50`}
+                className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${planColors[plan.id]} opacity-50`}
               />
-              <div className="absolute inset-0 border border-border-v/50" />
+              <div className="absolute inset-0 border border-[#1E2340] rounded-2xl" />
 
               <div className="relative z-10 p-8">
-                {plan.highlighted && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="btn-primary px-4 py-1 rounded-full text-sm font-semibold flex items-center gap-2">
-                      <Zap className="w-4 h-4" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-
-                <h3 className="text-2xl font-bold text-text mb-2">
+                <h3 className="font-mono text-xs text-violet-400 uppercase tracking-wider mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-muted-v text-sm mb-6">
+                <p className="text-neutral-400 text-sm mb-6">
                   {plan.description}
                 </p>
 
                 <div className="mb-8">
-                  <span className="text-4xl font-bold text-text">
+                  <span className="font-display text-5xl font-black text-white">
                     {plan.price}
                   </span>
-                  <span className="text-muted-v ml-1">
+                  <span className="text-neutral-500 ml-1">
                     {plan.period}
                   </span>
                 </div>
@@ -226,14 +228,14 @@ export default function UpgradePage() {
                       className="flex items-start gap-3"
                     >
                       <Check className="w-5 h-5 text-green-v flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-text/80">
+                      <span className="text-sm text-white/80">
                         {feature}
                       </span>
                     </div>
                   ))}
 
                   {plan.notIncluded.length > 0 && (
-                    <div className="pt-6 border-t border-border-v/50 space-y-3">
+                    <div className="pt-6 border-t border-[#1E2340] space-y-3">
                       <p className="text-xs font-semibold text-muted-v uppercase">
                         Not included
                       </p>
@@ -243,7 +245,7 @@ export default function UpgradePage() {
                           className="flex items-start gap-3"
                         >
                           <X className="w-5 h-5 text-muted-v flex-shrink-0 mt-0.5" />
-                          <span className="text-sm text-text/60">
+                          <span className="text-sm text-white/60">
                             {feature}
                           </span>
                         </div>
@@ -252,6 +254,7 @@ export default function UpgradePage() {
                   )}
                 </div>
               </div>
+            </motion.div>
             </motion.div>
           ))}
         </div>
@@ -262,7 +265,7 @@ export default function UpgradePage() {
           transition={{ delay: 0.3 }}
           className="max-w-3xl mx-auto"
         >
-          <h2 className="text-2xl font-bold text-text mb-8 text-center">
+          <h2 className="font-display text-2xl font-bold text-violet-400 mb-8 text-center">
             Frequently Asked Questions
           </h2>
 
@@ -287,12 +290,12 @@ export default function UpgradePage() {
             ].map((item, i) => (
               <motion.div
                 key={i}
-                className="bg-card-v border border-border-v rounded-xl p-6"
+                className="bg-[#0D1021] border border-[#1E2340] rounded-xl p-6"
               >
-                <h3 className="font-semibold text-text mb-2">
+                <h3 className="font-semibold text-white mb-2">
                   {item.q}
                 </h3>
-                <p className="text-muted-v text-sm">{item.a}</p>
+                <p className="text-neutral-400 text-sm">{item.a}</p>
               </motion.div>
             ))}
           </div>
@@ -307,7 +310,7 @@ export default function UpgradePage() {
           <p className="text-muted-v mb-4">
             Need help choosing the right plan?
           </p>
-          <button className="text-orange font-semibold hover:underline">
+          <button className="text-violet-400 font-semibold hover:underline">
             Contact our sales team →
           </button>
         </motion.div>

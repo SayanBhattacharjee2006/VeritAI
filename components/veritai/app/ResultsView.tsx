@@ -235,10 +235,10 @@ export function ResultsView() {
       >
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
           <div>
-            <p className="font-mono text-xs text-cyan mb-2">
+            <p className="font-mono text-xs text-violet-400 mb-2">
               Research Analysis &#8212; ID {report.id}
             </p>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold text-text">
+            <h1 className="font-display text-2xl sm:text-3xl font-bold text-white">
               {report.title}
             </h1>
           </div>
@@ -268,9 +268,9 @@ export function ResultsView() {
 
         {/* Meta info */}
         <div className="flex flex-wrap items-center gap-3">
-          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface border border-border-v">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#0C1018] border border-[#1E2340]">
             <Icon className="w-4 h-4 text-muted-v" />
-            <span className="text-xs font-medium text-text uppercase">
+            <span className="text-xs font-medium text-white uppercase">
               {report.inputType}
             </span>
           </span>
@@ -285,7 +285,7 @@ export function ResultsView() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-card-v rounded-2xl border border-border-v p-6 mb-8"
+        className="bg-[#0D1021] rounded-2xl border border-[#1E2340] p-6 mb-8"
       >
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Left: Truth ring and stats */}
@@ -327,10 +327,10 @@ export function ResultsView() {
             )}
 
             {/* Key takeaways preview */}
-            <div className="p-4 rounded-xl bg-surface">
+            <div className="p-4 rounded-xl bg-[#0C1018]">
               <div className="flex items-center gap-2 mb-2">
                 <Lightbulb className="w-4 h-4 text-amber" />
-                <span className="text-sm font-semibold text-text">Key Takeaways</span>
+                <span className="text-sm font-semibold text-white">Key Takeaways</span>
               </div>
               <ul className="space-y-1">
                 {report.takeaways.slice(0, 3).map((takeaway, index) => (
@@ -353,7 +353,7 @@ export function ResultsView() {
       >
         {/* Section header with filters */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <h2 className="text-lg font-semibold text-text">
+          <h2 className="text-lg font-semibold text-white">
             Analyzed Claims ({report.claims.length})
           </h2>
 
@@ -365,8 +365,8 @@ export function ResultsView() {
                 className={cn(
                   'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
                   filter === f
-                    ? 'bg-card-high text-text'
-                    : 'bg-surface text-muted-v hover:text-text'
+                    ? 'bg-[#161C28] text-white'
+                    : 'bg-[#0C1018] text-neutral-500 hover:text-white'
                 )}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -393,11 +393,11 @@ export function ResultsView() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="mt-8 p-6 rounded-2xl bg-amber/5 border border-amber/20"
+        className="mt-8 p-6 rounded-2xl bg-violet-500/5 border border-violet-500/20"
       >
         <div className="flex items-center gap-2 mb-4">
-          <Lightbulb className="w-5 h-5 text-amber" />
-          <h3 className="text-lg font-semibold text-text">Key Takeaways</h3>
+          <Lightbulb className="w-5 h-5 text-violet-400" />
+          <h3 className="text-lg font-semibold text-white">Key Takeaways</h3>
         </div>
         <ul className="space-y-3">
           {report.takeaways.map((takeaway, index) => (

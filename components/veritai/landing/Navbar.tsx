@@ -31,7 +31,7 @@ export function Navbar() {
     <motion.header
       className={cn(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        scrolled ? 'bg-surface/60 backdrop-blur-xl shadow-lg' : 'bg-transparent'
+        scrolled ? 'bg-black/80 backdrop-blur-xl border-b border-white/[0.06] shadow-[0_1px_0_rgba(255,255,255,0.04)]' : 'bg-transparent'
       )}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,27 +40,27 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <motion.div
               whileHover={{ rotate: 12, scale: 1.05 }}
-              className="p-1.5 rounded-lg bg-gradient-to-br from-orange to-amber transition-shadow hover:shadow-[0_0_12px_rgba(255,107,43,0.5)]"
+              className="p-1.5 rounded-lg bg-white/10 border border-white/10 transition-all hover:bg-white/15"
             >
-              <ShieldCheck className="w-5 h-5 text-bg" />
+              <ShieldCheck className="w-5 h-5 text-white" />
             </motion.div>
-            <span className="font-display font-bold text-xl text-text">VeritAI</span>
+            <span className="font-display font-bold text-xl text-white">VeritAI</span>
           </Link>
           
           {/* Center nav - Desktop */}
           <div className="hidden md:flex items-center">
-            <div className="flex items-center gap-1 p-1 rounded-full bg-surface/50 border border-border-v">
+            <div className="flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/[0.08]">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setActiveLink(link.href)}
-                  className="relative px-4 py-2 text-sm font-medium text-muted-v hover:text-text transition-colors"
+                  className="relative px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors"
                 >
                   {activeLink === link.href && (
                     <motion.div
                       layoutId="activeNav"
-                      className="absolute inset-0 bg-card-high rounded-full"
+                      className="absolute inset-0 bg-white/[0.08] rounded-full"
                       transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     />
                   )}
@@ -75,20 +75,20 @@ export function Navbar() {
             {/* Theme toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg hover:bg-surface transition-colors"
+              className="p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
-                <Sun className="w-5 h-5 text-muted-v" />
+                <Sun className="w-5 h-5 text-neutral-500" />
               ) : (
-                <Moon className="w-5 h-5 text-muted-v" />
+                <Moon className="w-5 h-5 text-neutral-500" />
               )}
             </button>
             
             {/* Login button */}
             <Link
               href="/login"
-              className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-muted-v hover:text-text transition-colors"
+              className="hidden sm:inline-flex px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white transition-colors"
             >
               Login
             </Link>
@@ -98,7 +98,7 @@ export function Navbar() {
               <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 <Link
                   href="/login"
-                  className="hidden sm:inline-flex px-5 py-2.5 rounded-lg btn-primary text-sm font-semibold shadow-[0_0_20px_rgba(255,107,43,0.25)] hover:shadow-[0_0_28px_rgba(255,107,43,0.4)] transition-shadow"
+                  className="hidden sm:inline-flex px-5 py-2.5 rounded-lg btn-primary text-sm font-semibold transition-shadow"
                 >
                   Get Started
                 </Link>
@@ -108,13 +108,13 @@ export function Navbar() {
             {/* Mobile menu button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-surface transition-colors"
+              className="md:hidden p-2 rounded-lg hover:bg-white/[0.06] transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-5 h-5 text-text" />
+                <X className="w-5 h-5 text-white" />
               ) : (
-                <Menu className="w-5 h-5 text-text" />
+                <Menu className="w-5 h-5 text-white" />
               )}
             </button>
           </div>
@@ -132,7 +132,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-2 text-sm font-medium text-muted-v hover:text-text hover:bg-surface rounded-lg transition-colors"
+                className="block px-4 py-2 text-sm font-medium text-neutral-500 hover:text-white hover:bg-white/[0.04] rounded-lg transition-colors"
               >
                 {link.label}
               </Link>
@@ -140,7 +140,7 @@ export function Navbar() {
             <div className="pt-4 flex flex-col gap-2">
               <Link
                 href="/login"
-                className="px-4 py-2 text-center text-sm font-medium text-muted-v hover:text-text transition-colors"
+                className="px-4 py-2 text-center text-sm font-medium text-neutral-500 hover:text-white transition-colors"
               >
                 Login
               </Link>

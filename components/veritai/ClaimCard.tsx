@@ -32,7 +32,7 @@ export function ClaimCard({ claim, index, defaultExpanded = false, className }: 
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.08, duration: 0.4 }}
       className={cn(
-        'bg-card-v rounded-lg border border-border-v overflow-hidden',
+        'bg-[#0D1021] rounded-lg border border-[#1E2340] overflow-hidden',
         'border-l-4',
         verdictBorderColors[claim.verdict],
         className
@@ -41,7 +41,7 @@ export function ClaimCard({ claim, index, defaultExpanded = false, className }: 
       {/* Header - always visible */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full p-4 flex items-start gap-4 text-left hover:bg-card-high/50 transition-colors cursor-pointer"
+        className="w-full p-4 flex items-start gap-4 text-left hover:bg-[#161C28]/50 transition-colors cursor-pointer"
       >
         <div className="flex-1 min-w-0">
           {/* Top row: verdict badge, claim number, temporal/conflict badges */}
@@ -63,7 +63,7 @@ export function ClaimCard({ claim, index, defaultExpanded = false, className }: 
           </div>
           
           {/* Claim text */}
-          <p className="text-text font-medium leading-relaxed">
+          <p className="text-white font-medium leading-relaxed">
             {claim.text}
           </p>
         </div>
@@ -88,9 +88,9 @@ export function ClaimCard({ claim, index, defaultExpanded = false, className }: 
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-4 pb-4 space-y-4 border-t border-border-v pt-4">
+            <div className="px-4 pb-4 space-y-4 border-t border-[#1E2340] pt-4">
               {/* AI Reasoning */}
-              <div className="bg-surface rounded-lg p-4">
+              <div className="bg-[#0C1018] rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Brain className="w-4 h-4 text-cyan" />
                   <span className="text-xs font-mono text-cyan uppercase tracking-wider">

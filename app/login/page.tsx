@@ -116,7 +116,7 @@ export default function AuthPage() {
       {/* BACKGROUND - DEEP DARK RADIAL */}
       <div 
         className="fixed inset-0 z-0 pointer-events-none"
-        style={{ background: 'radial-gradient(circle at 50% 40%, #220E00 0%, #080808 50%, #000000 100%)' }}
+        style={{ background: 'radial-gradient(circle at 50% 40%, #1a0533 0%, #080808 50%, #000000 100%)' }}
       />
       {/* Vertical transition overlay */}
       <div className="fixed inset-0 z-0 pointer-events-none bg-gradient-to-b from-transparent via-transparent to-black" />
@@ -168,7 +168,7 @@ export default function AuthPage() {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Enter your name" 
-                    className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.name ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
+                    className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)] ${errors.name ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
                   />
                   {errors.name && <p className="text-xs text-red-500 mt-1 ml-1">{errors.name}</p>}
                 </motion.div>
@@ -185,7 +185,7 @@ export default function AuthPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email" 
-                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.email ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
+                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] px-[20px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)] ${errors.email ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
                 />
                 {errors.email && <p className="text-xs text-red-500 mt-1 ml-1">{errors.email}</p>}
               </motion.div>
@@ -199,7 +199,7 @@ export default function AuthPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter your password" 
-                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] pl-[20px] pr-[44px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)] ${errors.password ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
+                  className={`w-full h-[52px] bg-[rgba(255,255,255,0.06)] border rounded-[14px] pl-[20px] pr-[44px] py-[16px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)] ${errors.password ? 'border-red-500/50' : 'border-[rgba(255,255,255,0.1)]'}`} 
                 />
                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-[16px] top-[26px] -translate-y-1/2 text-[rgba(255,255,255,0.4)] hover:text-white transition-colors cursor-pointer">
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -224,7 +224,7 @@ export default function AuthPage() {
             whileHover={{ scale: isLoading ? 1 : 1.02, filter: isLoading ? 'brightness(1)' : 'brightness(1.1)' }}
             whileTap={{ scale: isLoading ? 1 : 0.97 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="w-full h-[56px] mt-[16px] mb-[16px] rounded-[50px] bg-gradient-to-r from-[#FF4500] via-[#FFB800] to-[#FFE033] text-white font-semibold text-[16px] shadow-[0_8px_32px_rgba(255,69,0,0.45)] flex items-center justify-center outline-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full h-[56px] mt-[16px] mb-[16px] rounded-[50px] bg-white text-[#080808] font-semibold text-[16px] shadow-[0_8px_32px_rgba(255,255,255,0.10)] flex items-center justify-center outline-none cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed hover:bg-[#f0f0f0] transition-colors"
           >
             {isLoading ? (
               <Loader2 className="w-6 h-6 animate-spin" />
@@ -239,7 +239,7 @@ export default function AuthPage() {
                 Already have an account?{' '}
                 <button type="button" onClick={() => {
                   setMode('login'); setErrors({}); setSubmitError('');
-                }} className="text-[#FF5500] hover:text-[#FF6600] transition-colors border-b border-transparent hover:border-[#FF6600] outline-none cursor-pointer">
+                }} className="text-violet-400 hover:text-violet-300 transition-colors border-b border-transparent hover:border-violet-300 outline-none cursor-pointer">
                   Log in
                 </button>
               </p>

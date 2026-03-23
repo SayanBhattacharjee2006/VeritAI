@@ -63,14 +63,14 @@ export function AppLayout({ children }: AppLayoutProps) {
       >
         <div className="flex items-center justify-between p-4 h-16 border-b border-border-v">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="p-1.5 rounded-lg bg-gradient-to-br from-orange to-amber shrink-0">
-              <ShieldCheck className="w-5 h-5 text-bg" />
+            <div className="p-1.5 rounded-lg bg-white/10 border border-white/10 shrink-0">
+              <ShieldCheck className="w-5 h-5 text-white" />
             </div>
             {!sidebarCollapsed && (
               <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="font-display font-bold text-lg text-text"
+                className="font-display font-bold text-lg text-white"
               >
                 VeritAI
               </motion.span>
@@ -122,7 +122,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                     {isActive && (
                       <motion.div
                         layoutId="activeNavItem"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-orange"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 rounded-r-full bg-violet-500"
                       />
                     )}
                     <item.icon className="w-5 h-5 shrink-0" />
@@ -140,15 +140,15 @@ export function AppLayout({ children }: AppLayoutProps) {
         </nav>
 
         {plan === 'free' && !sidebarCollapsed && (
-          <div className="mx-3 mb-3 p-4 rounded-xl bg-gradient-to-br from-orange/10 to-amber/10 border border-orange/20">
+          <div className="mx-3 mb-3 p-4 rounded-xl bg-gradient-to-br from-violet-500/10 to-cyan-400/10 border border-violet-500/20">
             <div className="flex items-center gap-2 mb-2">
-              <Crown className="w-4 h-4 text-amber" />
-              <span className="text-sm font-semibold text-text">Upgrade to Pro</span>
+              <Crown className="w-4 h-4 text-violet-400" />
+              <span className="text-sm font-semibold text-white">Upgrade to Pro</span>
             </div>
-            <p className="text-xs text-muted-v mb-3">Get 50 verifications/day and PDF exports</p>
+            <p className="text-xs text-neutral-500 mb-3">Get 50 verifications/day and PDF exports</p>
             <Link
               href="/dashboard/upgrade"
-              className="block text-center text-xs font-semibold text-orange hover:underline"
+              className="block text-center text-xs font-semibold text-violet-400 hover:underline"
             >
               View Plans
             </Link>
@@ -162,12 +162,12 @@ export function AppLayout({ children }: AppLayoutProps) {
               sidebarCollapsed && 'justify-center'
             )}
           >
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange to-amber flex items-center justify-center shrink-0 ring-2 ring-orange/20">
-              <span className="text-sm font-bold text-bg uppercase">{user?.name?.charAt(0) || 'U'}</span>
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center shrink-0 ring-2 ring-violet-500/20">
+              <span className="text-sm font-bold text-white uppercase">{user?.name?.charAt(0) || 'U'}</span>
             </div>
             {!sidebarCollapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-text truncate">{user?.name || 'User'}</p>
+                <p className="text-sm font-medium text-white truncate">{user?.name || 'User'}</p>
                 <p className="text-xs text-muted-v truncate">{user?.email || 'user@example.com'}</p>
               </div>
             )}
@@ -199,8 +199,8 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex items-center gap-4 w-full h-full">
               <div className="flex md:hidden items-center gap-2 shrink-0">
                 <Link href="/dashboard" className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-gradient-to-br from-orange to-amber">
-                    <ShieldCheck className="w-5 h-5 text-bg" />
+                  <div className="p-1.5 rounded-lg bg-white/10 border border-white/10">
+                    <ShieldCheck className="w-5 h-5 text-white" />
                   </div>
                 </Link>
               </div>
@@ -236,8 +236,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   className={cn(
                     'hidden sm:inline-flex px-2.5 py-1 rounded-full text-xs font-semibold uppercase',
                     plan === 'free' && 'bg-muted-v/20 text-muted-v',
-                    plan === 'pro' && 'bg-orange/20 text-orange',
-                    plan === 'premium' && 'bg-amber/20 text-amber'
+                    plan === 'pro' && 'bg-violet-500/20 text-violet-400',
+                    plan === 'premium' && 'bg-cyan-400/20 text-cyan-300'
                   )}
                 >
                   {plan}
@@ -255,8 +255,8 @@ export function AppLayout({ children }: AppLayoutProps) {
                   )}
                 </button>
 
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange to-amber flex items-center justify-center shrink-0 ring-2 ring-orange/20">
-                  <span className="text-sm font-bold text-bg uppercase">{user?.name?.charAt(0) || 'U'}</span>
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-cyan-400 flex items-center justify-center shrink-0 ring-2 ring-violet-500/20">
+                  <span className="text-sm font-bold text-white uppercase">{user?.name?.charAt(0) || 'U'}</span>
                 </div>
               </div>
             </div>
@@ -277,7 +277,7 @@ export function AppLayout({ children }: AppLayoutProps) {
                 href={item.href}
                 className={cn(
                   'flex flex-col items-center gap-1 px-3 py-2',
-                  isActive ? 'text-orange' : 'text-muted-v'
+                  isActive ? 'text-violet-400' : 'text-muted-v'
                 )}
               >
                 <item.icon className="w-5 h-5" />
@@ -289,7 +289,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             href="/dashboard/upgrade"
             className={cn(
               'flex flex-col items-center gap-1 px-3 py-2',
-              pathname === '/dashboard/upgrade' ? 'text-orange' : 'text-muted-v'
+              pathname === '/dashboard/upgrade' ? 'text-violet-400' : 'text-muted-v'
             )}
           >
             <Crown className="w-5 h-5" />

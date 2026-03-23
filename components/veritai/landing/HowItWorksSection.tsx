@@ -41,10 +41,10 @@ export function HowItWorksSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <ScrollReveal className="text-center mb-16">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-orange/10 text-orange text-xs font-mono uppercase tracking-wider mb-4">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-[#1C1040] text-violet-400 text-xs font-mono uppercase tracking-wider border border-violet-900/40 mb-4">
             Pipeline
           </span>
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-text mb-4">
+          <h2 className="font-display text-5xl lg:text-6xl font-bold text-violet-400 mb-4">
             How It Works
           </h2>
           <p className="text-lg text-muted-v max-w-2xl mx-auto">
@@ -55,9 +55,9 @@ export function HowItWorksSection() {
         {/* Steps */}
         <div ref={ref} className="relative">
           {/* Connecting line - Desktop */}
-          <div className="hidden lg:block absolute top-[88px] left-[12.5%] right-[12.5%] h-0.5 bg-border-v">
+          <div className="hidden lg:block absolute top-[88px] left-[12.5%] right-[12.5%] h-0.5 bg-[#1E2340]">
             <motion.div
-              className="h-full bg-gradient-to-r from-orange via-amber to-cyan"
+              className="h-full bg-gradient-to-r from-violet-500 via-purple-400 to-cyan-400"
               initial={{ scaleX: 0 }}
               animate={{ scaleX: isInView ? 1 : 0 }}
               transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
@@ -79,23 +79,23 @@ export function HowItWorksSection() {
                 }}
                 className="flex flex-col items-center text-center"
               >
-                <span className="font-mono text-xs text-orange uppercase tracking-widest mb-3 block">
+                <span className="font-mono text-xs text-violet-400 uppercase tracking-widest mb-3 block">
                   STEP {step.number}
                 </span>
 
                 <motion.div
                   whileHover={{ scale: 1.1 }}
-                  className="w-16 h-16 rounded-full flex items-center justify-center bg-card-v border-2 border-border-v shrink-0 shadow-[0_0_20px_rgba(255,107,43,0.15)]"
+                  className="w-16 h-16 rounded-full flex items-center justify-center bg-[#1C1040] border-2 border-[#1E2340] shrink-0 shadow-[0_0_20px_rgba(139,92,246,0.15)]"
                 >
-                  <step.icon className="w-7 h-7 text-orange" />
+                  <step.icon className="w-7 h-7 text-white" />
                 </motion.div>
 
-                <h3 className="font-display font-bold text-lg text-text mb-2">
+                <h3 className="font-display font-bold text-lg text-white mb-2">
                   {step.title}
                 </h3>
                 
                 {/* Description */}
-                <p className="text-sm text-muted-v leading-relaxed">
+                <p className="text-sm text-neutral-400 leading-relaxed">
                   {step.description}
                 </p>
               </motion.div>

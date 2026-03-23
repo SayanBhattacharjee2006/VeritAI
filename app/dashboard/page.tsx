@@ -244,7 +244,7 @@ function IdleView() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="text-center mb-8"
       >
-        <h1 className="font-display text-4xl font-bold text-text mb-3">
+        <h1 className="font-display text-4xl font-bold text-white mb-3">
           What do you want to verify?
         </h1>
         <p className="text-muted-v">
@@ -303,7 +303,7 @@ function IdleView() {
                 placeholder="Paste any article, paragraph, essay, or claim..."
                 className={cn(
                   'w-full min-h-[180px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] p-[20px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 resize-none',
-                  'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
+                  'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)]'
                 )}
                 maxLength={5000}
               />
@@ -330,7 +330,7 @@ function IdleView() {
                     placeholder="https://example.com/article"
                     className={cn(
                       'w-full h-[52px] pl-[48px] pr-[20px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200',
-                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
+                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)]'
                     )}
                   />
                 </div>
@@ -439,7 +439,7 @@ function IdleView() {
                   className={cn(
                     'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
                     aiDetectMode === 'text'
-                      ? 'bg-orange/20 text-orange border border-orange/30'
+                      ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30'
                       : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.5)] border border-[rgba(255,255,255,0.1)] hover:text-white'
                   )}
                 >
@@ -450,7 +450,7 @@ function IdleView() {
                   className={cn(
                     'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
                     aiDetectMode === 'image'
-                      ? 'bg-orange/20 text-orange border border-orange/30'
+                      ? 'bg-violet-500/20 text-violet-400 border border-violet-500/30'
                       : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.5)] border border-[rgba(255,255,255,0.1)] hover:text-white'
                   )}
                 >
@@ -458,8 +458,8 @@ function IdleView() {
                 </button>
               </div>
 
-              <div className="mb-3 p-3 rounded-xl bg-orange/5 border border-orange/20 flex items-start gap-3">
-                <Bot className="w-4 h-4 text-orange shrink-0 mt-0.5" />
+              <div className="mb-3 p-3 rounded-xl bg-violet-500/5 border border-violet-500/20 flex items-start gap-3">
+                <Bot className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-v">
                   {aiDetectMode === 'text'
                     ? 'Paste text (min 50 chars) to check if it was written by AI.'
@@ -475,7 +475,7 @@ function IdleView() {
                     placeholder="Paste text to check if it was written by AI..."
                     className={cn(
                       'w-full min-h-[180px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] p-[20px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 resize-none',
-                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
+                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(167,139,250,0.6)] focus:shadow-[inset_0_0_15px_rgba(124,58,237,0.15)]'
                     )}
                     maxLength={5000}
                   />
@@ -495,8 +495,8 @@ function IdleView() {
                         'min-h-[180px] rounded-xl border-2 border-dashed cursor-pointer transition-colors',
                         'flex flex-col items-center justify-center gap-3',
                         isDragging
-                          ? 'border-orange bg-orange/5'
-                          : 'border-[rgba(255,255,255,0.1)] hover:border-orange/50'
+                          ? 'border-violet-400 bg-violet-500/5'
+                          : 'border-[rgba(255,255,255,0.1)] hover:border-violet-400/50'
                       )}
                     >
                       <div className="p-4 rounded-full bg-surface">
@@ -547,8 +547,8 @@ function IdleView() {
           whileTap={isInputValid() ? { scale: 0.97 } : {}}
           transition={{ type: "spring", stiffness: 400, damping: 17 }}
           className={cn(
-            'w-full h-[56px] rounded-[50px] font-semibold text-[16px] text-white flex items-center justify-center gap-2 outline-none transition-all cursor-pointer',
-            'bg-gradient-to-r from-[#FF4500] via-[#FFB800] to-[#FFE033] shadow-[0_8px_32px_rgba(255,69,0,0.45)]',
+            'w-full h-[56px] rounded-[50px] font-semibold text-[16px] flex items-center justify-center gap-2 outline-none transition-all cursor-pointer',
+            'bg-white text-[#080808] shadow-[0_8px_32px_rgba(255,255,255,0.10)] hover:bg-[#f0f0f0]',
             !isInputValid() && 'opacity-70 cursor-not-allowed'
           )}
         >
