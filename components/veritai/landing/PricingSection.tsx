@@ -119,7 +119,7 @@ function PricingCard({ plan }: { plan: (typeof plans)[number] }) {
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="py-24 bg-surface relative overflow-hidden">
+    <section id="pricing" className="py-24 relative overflow-hidden">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-orange/4 rounded-full blur-[150px] pointer-events-none" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <ScrollReveal className="text-center mb-16">

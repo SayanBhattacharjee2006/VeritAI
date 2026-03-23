@@ -260,20 +260,20 @@ function IdleView() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className="flex justify-center mb-6"
       >
-        <div className="inline-flex p-1 rounded-full bg-surface border border-border-v">
+        <div className="inline-flex p-1 rounded-full bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)]">
           {inputTabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'relative flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-medium transition-colors cursor-pointer',
-                activeTab === tab.id ? 'text-text' : 'text-muted-v hover:text-text'
+                'relative flex items-center gap-2 px-6 py-2.5 rounded-full text-[13px] transition-colors cursor-pointer outline-none',
+                activeTab === tab.id ? 'text-white font-medium' : 'text-[rgba(255,255,255,0.5)] hover:text-white font-normal'
               )}
             >
               {activeTab === tab.id && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-card-high rounded-full"
+                  className="absolute inset-0 bg-[rgba(255,255,255,0.1)] rounded-full"
                   transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                 />
               )}
@@ -287,7 +287,7 @@ function IdleView() {
       <motion.div
         variants={blockVariants}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="bg-card-v rounded-2xl border border-border-v p-6 mb-6"
+        className="relative mb-6"
       >
         <AnimatePresence mode="wait">
           {activeTab === 'text' && (
@@ -302,9 +302,8 @@ function IdleView() {
                 onChange={(e) => setTextInput(e.target.value)}
                 placeholder="Paste any article, paragraph, essay, or claim..."
                 className={cn(
-                  'w-full min-h-[180px] p-4 rounded-xl bg-surface border border-border-v',
-                  'text-text placeholder:text-muted-v resize-none',
-                  'focus:outline-none focus:ring-2 focus:ring-primary-glow/30 focus:border-primary-glow/50'
+                  'w-full min-h-[180px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] p-[20px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 resize-none',
+                  'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
                 )}
                 maxLength={5000}
               />
@@ -330,14 +329,13 @@ function IdleView() {
                     onChange={(e) => setUrlInput(e.target.value)}
                     placeholder="https://example.com/article"
                     className={cn(
-                      'w-full pl-12 pr-4 py-4 rounded-xl bg-surface border border-border-v',
-                      'text-text placeholder:text-muted-v',
-                      'focus:outline-none focus:ring-2 focus:ring-primary-glow/30 focus:border-primary-glow/50'
+                      'w-full h-[52px] pl-[48px] pr-[20px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200',
+                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
                     )}
                   />
                 </div>
                 <button
-                  className="px-6 py-4 rounded-xl btn-ghost font-semibold shrink-0"
+                  className="h-[52px] px-6 rounded-[14px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] text-[15px] text-white font-semibold shrink-0 hover:bg-[rgba(255,255,255,0.1)] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={!urlInput.trim()}
                 >
                   Fetch
@@ -441,8 +439,8 @@ function IdleView() {
                   className={cn(
                     'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
                     aiDetectMode === 'text'
-                      ? 'bg-cyan/20 text-cyan border border-cyan/30'
-                      : 'bg-surface text-muted-v border border-border-v hover:text-text'
+                      ? 'bg-orange/20 text-orange border border-orange/30'
+                      : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.5)] border border-[rgba(255,255,255,0.1)] hover:text-white'
                   )}
                 >
                   Detect AI Text
@@ -452,16 +450,16 @@ function IdleView() {
                   className={cn(
                     'flex-1 py-2 rounded-xl text-sm font-medium transition-colors',
                     aiDetectMode === 'image'
-                      ? 'bg-cyan/20 text-cyan border border-cyan/30'
-                      : 'bg-surface text-muted-v border border-border-v hover:text-text'
+                      ? 'bg-orange/20 text-orange border border-orange/30'
+                      : 'bg-[rgba(255,255,255,0.06)] text-[rgba(255,255,255,0.5)] border border-[rgba(255,255,255,0.1)] hover:text-white'
                   )}
                 >
                   Detect AI Image
                 </button>
               </div>
 
-              <div className="mb-3 p-3 rounded-xl bg-cyan/5 border border-cyan/20 flex items-start gap-3">
-                <Bot className="w-4 h-4 text-cyan shrink-0 mt-0.5" />
+              <div className="mb-3 p-3 rounded-xl bg-orange/5 border border-orange/20 flex items-start gap-3">
+                <Bot className="w-4 h-4 text-orange shrink-0 mt-0.5" />
                 <p className="text-xs text-muted-v">
                   {aiDetectMode === 'text'
                     ? 'Paste text (min 50 chars) to check if it was written by AI.'
@@ -476,9 +474,8 @@ function IdleView() {
                     onChange={(e) => setTextInput(e.target.value)}
                     placeholder="Paste text to check if it was written by AI..."
                     className={cn(
-                      'w-full min-h-[180px] p-4 rounded-xl bg-surface border border-border-v',
-                      'text-text placeholder:text-muted-v resize-none',
-                      'focus:outline-none focus:ring-2 focus:ring-cyan/30 focus:border-cyan/50'
+                      'w-full min-h-[180px] bg-[rgba(255,255,255,0.06)] border border-[rgba(255,255,255,0.1)] rounded-[14px] p-[20px] text-[15px] text-white placeholder-[rgba(255,255,255,0.35)] outline-none transition-all duration-200 resize-none',
+                      'focus:bg-[rgba(255,255,255,0.08)] focus:border-[rgba(255,69,0,0.6)] focus:shadow-[inset_0_0_15px_rgba(255,69,0,0.15)]'
                     )}
                     maxLength={5000}
                   />
@@ -498,8 +495,8 @@ function IdleView() {
                         'min-h-[180px] rounded-xl border-2 border-dashed cursor-pointer transition-colors',
                         'flex flex-col items-center justify-center gap-3',
                         isDragging
-                          ? 'border-cyan bg-cyan/5'
-                          : 'border-border-v hover:border-cyan/50'
+                          ? 'border-orange bg-orange/5'
+                          : 'border-[rgba(255,255,255,0.1)] hover:border-orange/50'
                       )}
                     >
                       <div className="p-4 rounded-full bg-surface">
@@ -546,14 +543,13 @@ function IdleView() {
         <motion.button
           onClick={handleStartVerification}
           disabled={!isInputValid()}
-          whileHover={isInputValid() ? { scale: 1.02 } : {}}
-          whileTap={isInputValid() ? { scale: 0.98 } : {}}
+          whileHover={isInputValid() ? { scale: 1.02, filter: 'brightness(1.1)' } : {}}
+          whileTap={isInputValid() ? { scale: 0.97 } : {}}
+          transition={{ type: "spring", stiffness: 400, damping: 17 }}
           className={cn(
-            'w-full py-4 rounded-xl font-display font-bold text-lg',
-            'flex items-center justify-center gap-3',
-            isInputValid()
-              ? 'btn-primary'
-              : 'bg-muted-v/20 text-muted-v cursor-not-allowed'
+            'w-full h-[56px] rounded-[50px] font-semibold text-[16px] text-white flex items-center justify-center gap-2 outline-none transition-all cursor-pointer',
+            'bg-gradient-to-r from-[#FF4500] via-[#FFB800] to-[#FFE033] shadow-[0_8px_32px_rgba(255,69,0,0.45)]',
+            !isInputValid() && 'opacity-70 cursor-not-allowed'
           )}
         >
           <Sparkles className="w-5 h-5" />

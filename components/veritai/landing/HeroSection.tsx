@@ -66,14 +66,14 @@ function HeroCard() {
       transition={{ duration: 0.9, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="relative"
     >
-      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-orange/20 via-transparent to-cyan/20 blur-xl" />
+      <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-orange/20 via-transparent to-amber/20 blur-xl" />
 
       <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut' }}>
         <div
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
           style={{ transition: 'transform 0.1s ease' }}
-          className="relative glass rounded-2xl border border-border-v p-6 w-full max-w-sm"
+          className="relative bg-card-v/40 backdrop-blur-2xl rounded-2xl border border-border-v p-6 w-full max-w-sm"
         >
           <div className="flex items-center justify-between mb-6">
             <span className="font-mono text-xs text-cyan">ANALYSIS_ID: VX-9920</span>

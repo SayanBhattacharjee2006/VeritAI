@@ -4,49 +4,48 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* VeritAI Design System */
-  --bg: #0A0F1E;
-  --surface: #111827;
-  --card: #1A1F2F;
-  --card-high: #25293A;
-  --border: #2A2F42;
-  --primary: #ADC6FF;
-  --primary-glow: #4D8EFF;
+  /* VeritAI Design System (Afterglow aesthetic) */
+  --bg: #000000;
+  --surface: #141414;
+  --card: #1A1A1A;
+  --card-high: #222222;
+  --border: #2A2A2A;
+  --primary: #FF9F1C;
+  --primary-glow: #FF6B2B;
   --cyan: #4CD7F6;
   --orange: #FF6B2B;
-  --amber: #F59E0B;
+  --amber: #FF9F1C;
   --green: #4AE176;
   --red: #FF6B6B;
-  --success: #4AE176;
-  --text: #DEE1F7;
-  --muted: #8892A4;
+  --text: #FFFFFF;
+  --muted: #A0A0A0;
   
   /* Mapped to Tailwind conventions */
-  --background: #0A0F1E;
-  --foreground: #DEE1F7;
-  --card-foreground: #DEE1F7;
-  --popover: #1A1F2F;
-  --popover-foreground: #DEE1F7;
-  --primary-foreground: #0A0F1E;
-  --secondary: #25293A;
-  --secondary-foreground: #DEE1F7;
-  --muted-foreground: #8892A4;
-  --accent: #25293A;
-  --accent-foreground: #DEE1F7;
+  --background: #000000;
+  --foreground: #FFFFFF;
+  --card-foreground: #FFFFFF;
+  --popover: #1A1A1A;
+  --popover-foreground: #FFFFFF;
+  --primary-foreground: #000000;
+  --secondary: #222222;
+  --secondary-foreground: #FFFFFF;
+  --muted-foreground: #A0A0A0;
+  --accent: #222222;
+  --accent-foreground: #FFFFFF;
   --destructive: #FF6B6B;
-  --destructive-foreground: #0A0F1E;
-  --input: #2A2F42;
-  --ring: #4D8EFF;
-  --radius: 0.625rem;
+  --destructive-foreground: #000000;
+  --input: #2A2A2A;
+  --ring: #FF6B2B;
+  --radius: 0.75rem;
   
-  --sidebar: #111827;
-  --sidebar-foreground: #DEE1F7;
-  --sidebar-primary: #ADC6FF;
-  --sidebar-primary-foreground: #0A0F1E;
-  --sidebar-accent: #25293A;
-  --sidebar-accent-foreground: #DEE1F7;
-  --sidebar-border: #2A2F42;
-  --sidebar-ring: #4D8EFF;
+  --sidebar: #141414;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-primary: #FF9F1C;
+  --sidebar-primary-foreground: #000000;
+  --sidebar-accent: #222222;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2A2A2A;
+  --sidebar-ring: #FF6B2B;
 }
 
 /* Light mode overrides */
@@ -63,7 +62,6 @@
   --amber: #B45309;
   --green: #15803D;
   --red: #DC2626;
-  --success: #15803D;
   --text: #0F172A;
   --muted: #475569;
 
@@ -91,9 +89,9 @@
 }
 
 @theme inline {
-  --font-sans: 'Inter', 'Inter Fallback', system-ui, sans-serif;
-  --font-display: 'Syne', 'Syne Fallback', system-ui, sans-serif;
-  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-syne), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), monospace;
   
   --color-bg: var(--bg);
   --color-surface: var(--surface);
@@ -109,7 +107,6 @@
   --color-red-v: var(--red);
   --color-text: var(--text);
   --color-muted-v: var(--muted);
-  --color-success: var(--green);
   
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -158,8 +155,8 @@
   body {
     @apply bg-bg text-text antialiased;
     background-image: 
-      radial-gradient(ellipse at top right, rgba(77, 142, 255, 0.06), transparent 50%),
-      radial-gradient(ellipse at bottom left, rgba(76, 215, 246, 0.04), transparent 50%);
+      radial-gradient(ellipse at top right, rgba(255, 107, 43, 0.06), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(245, 158, 11, 0.04), transparent 50%);
     min-height: 100vh;
   }
   
@@ -189,7 +186,7 @@
   left: 5%;
   width: 400px;
   height: 400px;
-  background: rgba(77, 142, 255, 0.07);
+  background: rgba(245, 158, 11, 0.06);
   animation: float-orb-1 25s ease-in-out infinite;
 }
 
@@ -198,7 +195,7 @@
   right: 5%;
   width: 350px;
   height: 350px;
-  background: rgba(76, 215, 246, 0.05);
+  background: rgba(255, 107, 43, 0.06);
   animation: float-orb-2 28s ease-in-out infinite;
 }
 

@@ -65,7 +65,7 @@ const stats = [
 
 export function StatsSection() {
   return (
-    <section className="py-24 bg-surface relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-orange/3 via-transparent to-cyan/3 pointer-events-none" aria-hidden="true" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

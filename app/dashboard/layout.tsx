@@ -36,6 +36,13 @@ export default function DashboardLayout({
     }
   }, [hydrated])
 
+  // Redirect to login if user is not authenticated (Temporarily Disabled for UI Testing)
+  // useEffect(() => {
+  //   if (hydrated && !isAuthenticated) {
+  //     router.replace('/login')
+  //   }
+  // }, [hydrated, isAuthenticated, router])
+
   // Still reading from localStorage — show spinner
   if (!hydrated) {
     return (
@@ -48,11 +55,10 @@ export default function DashboardLayout({
     )
   }
 
-  // Hydration complete — isAuthenticated is now trustworthy
-  if (!isAuthenticated) {
-    router.replace('/login')
-    return null
-  }
+  // Hydration complete — isAuthenticated is now trustworthy (Temporarily Disabled)
+  // if (!isAuthenticated) {
+  //   return null
+  // }
 
   return <AppLayout>{children}</AppLayout>
 }

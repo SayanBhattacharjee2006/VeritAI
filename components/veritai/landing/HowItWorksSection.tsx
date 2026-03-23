@@ -37,7 +37,7 @@ export function HowItWorksSection() {
   const isInView = useInView(ref, { once: true, margin: '-100px' })
   
   return (
-    <section id="how-it-works" className="py-24 bg-surface relative overflow-hidden">
+    <section id="how-it-works" className="py-24 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <ScrollReveal className="text-center mb-16">
