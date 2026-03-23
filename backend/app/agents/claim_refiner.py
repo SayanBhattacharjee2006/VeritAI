@@ -14,9 +14,14 @@ For each claim:
    specifying context (e.g. "X is the captain" without saying which
    team format, "X is the president" without saying which country,
    "X is the CEO" without saying which company), append a note:
-   " (Note: role context is ambiguous — verify across all contexts)"
+   " (Note: role context is ambiguous - verify across all contexts)"
    This helps the Judge Agent give a partial verdict instead of
    a false TRUE/FALSE on incomplete information.
+6. TEMPORAL ENFORCEMENT: For temporal claims (is_temporal=true),
+   append this note to the claim text:
+   " [TEMPORAL: verify with current sources only - ignore training knowledge]"
+   This signals to the Judge Agent to rely ONLY on retrieved evidence,
+   not its training data, for time-sensitive claims.
 
 Return ONLY a JSON array of objects:
 [{"id": "original_id", "text": "refined claim text",
